@@ -1,144 +1,102 @@
+# ddgp/morph.py
 # -*- coding: utf-8 -*-
 """
-Analisador morfológico leve para grego antigo.
-- Não usa Stanza.
-- Baseado em normalização e heurísticas simples.
-- Útil para complementar o lookup lexical do DDGP.
-
-Retorna um dicionário com:
-- palavra original
-- forma normalizada
-- forma sem diacríticos
-- possíveis sufixos reconhecidos
-- possível lema (heurístico)
-- categoria provável (POS)
+Analisador morfológico leve para grego antigo (versão ajustada).
+Melhorias:
+- tenta formas sem diacríticos como fallback
+- tenta remoção de terminações comuns com simplificação
+- retorna campos de diagnóstico para facilitar debug
 """
-
 from .utils import normalize_unicode, remove_diacritics, simplify
 
-# ------------------------------------------------------------
-# Sufixos muito comuns (simplificado)
-# ------------------------------------------------------------
-
-NOUN_SUFFIXES = [
-    "ος", "ου", "ον", "οι", "ους", "οις", "ῳ", "α", "ας", "η", "ης", "ῃ"
-]
-
-VERB_SUFFIXES = [
-    "ω", "εις", "ει", "ομεν", "ετε", "ουσι", "ειν", "ε", "ον", "ες", "εν"
-]
-
-ADJ_SUFFIXES = [
-    "ος", "η", "ον", "οι", "αι", "α"
-]
-
-
-# ------------------------------------------------------------
-# Funções de reconhecimento simples
-# ------------------------------------------------------------
+# sufíxos comuns (mantidos)
+NOUN_SUFFIXES = ["ος","ου","ον","οι","ους","οις","ῳ","α","ας","η","ης","ῃ"]
+VERB_SUFFIXES = ["ω","εις","ει","ομεν","ετε","ουσι","ειν","ε","ον","ες","εν"]
+ADJ_SUFFIXES = ["ος","η","ον","οι","αι","α"]
 
 def guess_pos(word):
-    """
-    Heurística simples de categoria gramatical.
-    """
     w = normalize_unicode(word)
-
+    # tenta sem diacríticos primeiro
+    wn = remove_diacritics(w)
     for suf in VERB_SUFFIXES:
-        if w.endswith(suf):
+        if w.endswith(suf) or wn.endswith(suf):
             return "verb"
-
     for suf in NOUN_SUFFIXES:
-        if w.endswith(suf):
+        if w.endswith(suf) or wn.endswith(suf):
             return "noun"
-
     for suf in ADJ_SUFFIXES:
-        if w.endswith(suf):
+        if w.endswith(suf) or wn.endswith(suf):
             return "adjective"
-
     return "unknown"
 
-
 def guess_lemma(word):
-    """
-    Heurística ultra simples para lemma:
-    - remove sufixos comuns
-    - retorna forma mais curta possível
-    """
     w = normalize_unicode(word)
+    wn = remove_diacritics(w)
 
-    # Tenta verbos primeiro
-    for suf in sorted(VERB_SUFFIXES, key=len, reverse=True):
-        if w.endswith(suf):
-            stem = w[: -len(suf)]
-            if stem:
-                return stem + "ω"   # lema verbal típico
-            return w
+    # Helper to try a list of suffixes and produce a candidate lemma
+    def try_suffixes(suffixes, lemma_ending):
+        for suf in sorted(suffixes, key=len, reverse=True):
+            if w.endswith(suf):
+                stem = w[:-len(suf)]
+                if stem:
+                    return stem + lemma_ending
+            if wn.endswith(suf):
+                stem = wn[:-len(suf)]
+                if stem:
+                    return stem + lemma_ending
+        return None
 
-    # Tenta substantivos
-    for suf in sorted(NOUN_SUFFIXES, key=len, reverse=True):
-        if w.endswith(suf):
-            stem = w[: -len(suf)]
-            if stem:
-                return stem + "ος"  # lema nominal típico
-            return w
+    # 1) tentar verbo -> lema com ω
+    cand = try_suffixes(VERB_SUFFIXES, "ω")
+    if cand:
+        return normalize_unicode(cand)
 
-    # Tenta adjetivos
-    for suf in sorted(ADJ_SUFFIXES, key=len, reverse=True):
-        if w.endswith(suf):
-            stem = w[: -len(suf)]
-            if stem:
-                return stem + "ος"
-            return w
+    # 2) tentar substantivo -> lema com ος
+    cand = try_suffixes(NOUN_SUFFIXES, "ος")
+    if cand:
+        return normalize_unicode(cand)
 
-    return w  # fallback: lema = palavra
+    # 3) tentar adjetivo -> lema com ος
+    cand = try_suffixes(ADJ_SUFFIXES, "ος")
+    if cand:
+        return normalize_unicode(cand)
 
+    # 4) fallback: forma sem diacríticos (lower)
+    return simplify(w)
 
 def extract_suffix(word):
-    """
-    Retorna o sufixo mais provável.
-    """
     w = normalize_unicode(word)
-
+    wn = remove_diacritics(w)
     for suf in sorted(VERB_SUFFIXES, key=len, reverse=True):
-        if w.endswith(suf):
+        if w.endswith(suf) or wn.endswith(suf):
             return suf
-
     for suf in sorted(NOUN_SUFFIXES, key=len, reverse=True):
-        if w.endswith(suf):
+        if w.endswith(suf) or wn.endswith(suf):
             return suf
-
     for suf in sorted(ADJ_SUFFIXES, key=len, reverse=True):
-        if w.endswith(suf):
+        if w.endswith(suf) or wn.endswith(suf):
             return suf
-
     return None
 
-
-# ------------------------------------------------------------
-# Função principal
-# ------------------------------------------------------------
-
 def analyze_word(word: str) -> dict:
-    """
-    Analisa uma palavra em grego antigo e retorna
-    um dicionário com os dados encontrados.
-    """
     if not isinstance(word, str) or not word.strip():
         return {}
 
     original = word
     normalized = normalize_unicode(word)
-    nodiac = remove_diacritics(normalized)
-
+    no_diac = remove_diacritics(normalized)
     pos = guess_pos(normalized)
     lemma = guess_lemma(normalized)
-    suf = extract_suffix(normalized)
+    suffix = extract_suffix(normalized)
 
     return {
         "input": original,
         "normalized": normalized,
-        "no_diacritics": nodiac,
+        "no_diacritics": no_diac,
         "pos_guess": pos,
         "lemma_guess": lemma,
-        "suffix": suf,
+        "suffix": suffix,
+        "diagnostic": {
+            "simplified_input": simplify(original),
+        }
     }

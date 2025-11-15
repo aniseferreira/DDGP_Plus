@@ -3,11 +3,11 @@
 
 import streamlit as st
 from ddgp.morph import analyze_word
-from ddgp.lexicon import lookup_lexicon
+from ddgp.lexicon import lookup_lexicon, suggest_similar, get_lexicon
 from ddgp.utils import normalize_unicode
 
 # ------------------------------------------------------------
-# Configuração geral da página
+# Configuração da página
 # ------------------------------------------------------------
 
 st.set_page_config(
@@ -30,12 +30,27 @@ user_input = st.text_input(
 )
 
 if user_input.strip():
-    # Normalização (NFC por padrão)
+
+    # Normalização Unicode
     norm = normalize_unicode(user_input.strip())
 
     st.subheader("🔤 Palavra normalizada")
     st.code(norm)
 
     # --------------------------------------------------------
-    # 1. Análise Morfológica (módulo ddgp/morph.py)
-    # --
+    # MORFOLOGIA
+    # --------------------------------------------------------
+    st.subheader("🔎 Análise Morfológica")
+
+    try:
+        morph_data = analyze_word(norm)
+        if morph_data:
+            st.json(morph_data)
+        else:
+            st.info("Nenhuma análise morfológica encontrada.")
+    except Exception as e:
+        st.error(f"Erro na análise morfológica: {e}")
+
+    # --------------------------------------------------------
+    # LÉXICO
+    # ------------------------------------

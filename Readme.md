@@ -1,5 +1,5 @@
-📘 DDGP_Plus — Morfologia & Léxico para Grego Antigo (DDGP 3.x)
-
+📘 DDGP_Plus —Morfologi & Léxico para Grego Antigo (DDGP 3.x)
+## Dicionário Digital Grego-Português acrescido de análise morfológica Morfologia
 DDGP_Plus é uma aplicação em Streamlit para consulta morfossintática simples e lookup lexical utilizando o léxico DDGP 3.x (ddgp3x_entry.json).
 
 O objetivo é fornecer uma interface leve, rápida e prática para:

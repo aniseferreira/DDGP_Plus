@@ -1,86 +1,96 @@
 # ddgp/lexicon.py
 # -*- coding: utf-8 -*-
-"""
-Loader e lookup do léxico DDGP 3.x (versão tolerante).
-- Se o arquivo não existir, retorna lista vazia e não trava o app.
-- Exibe mensagens de erro controladas.
-- Busca exata, sem diacríticos e em forms/lemma.
-- Função suggest_similar para fallback.
-"""
 
 import json
 import os
-import logging
 
 from .utils import normalize_unicode, remove_diacritics, simplify, fuzzy_suggestions
-
-LOG = logging.getLogger(__name__)
 
 LEXICON_PATH = os.path.join(os.path.dirname(__file__), "data", "ddgp3x_entry.json")
 
 _LEXICON = None
 
-def load_lexicon(path: str = LEXICON_PATH) -> list:
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Lexicon file not found: {path}")
+
+# ------------------------------------------------------------
+# Carregamento
+# ------------------------------------------------------------
+def load_lexicon(path=LEXICON_PATH):
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
-    if not isinstance(data, list):
-        raise ValueError("Expected lexicon JSON to be a list of entries")
     return data
+
 
 def get_lexicon():
     global _LEXICON
     if _LEXICON is None:
         try:
             _LEXICON = load_lexicon()
-        except Exception as e:
-            LOG.exception("Could not load lexicon")
+        except:
             _LEXICON = []
     return _LEXICON
 
-def lookup_lexicon(word: str) -> list:
-    """
-    Returns list of matching entries. If lexicon missing, returns [].
-    """
-    if not word or not isinstance(word, str):
-        return []
 
+# ------------------------------------------------------------
+# Limpeza de gword → lema puro
+# ------------------------------------------------------------
+def extract_clean_lemma(gword: str) -> str:
+    """
+    Extrai o LEMA do campo gword.
+    - pega o primeiro elemento antes de vírgula
+    - remove espaços extras
+    - normaliza Unicode
+    - remove diacríticos para comparação
+    """
+    if not isinstance(gword, str):
+        return ""
+
+    # exemplo: "Α, α (ἄλφα) (τό)"
+    # lema = primeiro item antes da vírgula
+    raw = gword.split(",")[0].strip()
+
+    # normalizar
+    raw = normalize_unicode(raw)
+
+    return simplify(raw)  # remove diacríticos e põe em lower()
+
+
+# ------------------------------------------------------------
+# FUNÇÃO PRINCIPAL DE LOOKUP
+# ------------------------------------------------------------
+def lookup_lexicon(lemma: str):
+    """
+    Procura o LEMA no JSON DDGP.
+
+    IMPORTANTE:
+    - DDGP3x NÃO contém formas flexionadas.
+    - A busca deve ser feita APENAS pelo lema.
+    """
     lex = get_lexicon()
     if not lex:
-        # no lexicon loaded — return empty list
         return []
 
-    w_norm = normalize_unicode(word)
-    w_simp = simplify(w_norm)
+    lemma_clean = simplify(lemma)
 
     matches = []
+
     for entry in lex:
-        if not isinstance(entry, dict):
-            continue
-        # check lemma
-        lemma = entry.get("lemma", "")
-        if isinstance(lemma, str) and simplify(lemma) == w_simp:
+        gword = entry.get("gword", "")
+        gword_clean = extract_clean_lemma(gword)
+
+        if gword_clean == lemma_clean:
             matches.append(entry)
-            continue
-        # check forms
-        forms = entry.get("forms", [])
-        if isinstance(forms, list):
-            for form in forms:
-                if isinstance(form, str) and simplify(form) == w_simp:
-                    matches.append(entry)
-                    break
-        # also, some lexica might have "orth" or "form" keys
-        orth = entry.get("orth") or entry.get("form")
-        if isinstance(orth, str) and simplify(orth) == w_simp:
-            matches.append(entry)
-            continue
 
     return matches
 
-def suggest_similar(word: str, max_items=5) -> list:
+
+# ------------------------------------------------------------
+# Sugestões fuzzy de lemas próximos
+# ------------------------------------------------------------
+def suggest_similar(lemma: str, max_items=5):
     lex = get_lexicon()
     if not lex:
         return []
-    lemmas = [entry.get("lemma", "") for entry in lex if isinstance(entry, dict)]
-    return fuzzy_suggestions(word, lemmas, max_suggestions=max_items)
+
+    lemmas = [extract_clean_lemma(e.get("gword", "")) for e in lex]
+
+    return fuzzy_suggestions(lemma, lemmas, max_suggestions=max_items)

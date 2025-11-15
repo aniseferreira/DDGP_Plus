@@ -1,0 +1,44 @@
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# --- Streamlit ---
+.streamlit/**
+
+# --- System / OS ---
+.DS_Store
+Thumbs.db
+
+# --- Editors ---
+.vscode/
+.idea/
+
+# --- pytest ---
+.pytest_cache/
+
+# --- CLTK ---
+cltk_data/
+
+# --- pip ---
+pip-wheel-metadata/
+
+# --- Cache gera

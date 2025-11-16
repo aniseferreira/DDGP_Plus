@@ -23,7 +23,7 @@ def simplify(text):
     return ''.join(ch for ch in unicodedata.normalize("NFD", text) if not unicodedata.combining(ch))
 
 def main():
-    st.title("DDGP Plus — Morph V3")
+    st.title("📘DDGP Plus — Morph V3  — Analisador Morfológico & Léxico (3.x)")
 
     word = st.text_input("Digite uma forma grega:", "")
 

@@ -4,5 +4,11 @@
     "case": "gen",
     "number": "sg",
     "person": "1"
+  },
+  "σου": {
+    "lemma": "σύ",
+    "case": "gen",
+    "number": "sg",
+    "person": "2"
   }
 }

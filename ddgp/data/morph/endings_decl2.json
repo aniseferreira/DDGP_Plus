@@ -38,5 +38,15 @@
     "case": "acc",
     "number": "pl",
     "gender": "masc"
+  },
+  "ον_neut": {
+    "case": "nom",
+    "number": "sg",
+    "gender": "neut"
+  },
+  "α_neut": {
+    "case": "nom",
+    "number": "pl",
+    "gender": "neut"
   }
 }

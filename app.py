@@ -9,7 +9,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("📚 DDGP Plus — Analisador Morfológico & Léxico")
+st.title("📚 DDGP Plus + Analisador Morfológico Automático")
 
 st.write(
     """
@@ -81,4 +81,4 @@ if st.button("Analisar"):
 # Rodapé
 # --------------------------------------------------------------------
 st.markdown("---")
-st.caption("DDGP Plus — Projeto lexical-morfológico para Grego Antigo • 2025")
+st.caption("DDGP Plus — Projeto lexical-morfológico para Grego Antigo • 2025 • créditos do DDGP em http://hipatia.fclar.unesp.br")

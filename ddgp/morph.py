@@ -1,6 +1,7 @@
 # ddgp/morph.py — Comprehensive paradigm-based analyzer (Option B)
 # -*- coding: utf-8 -*-
-\"\"\"Comprehensive morphological analyzer for DDGP Plus (Option B)
+"""
+Comprehensive morphological analyzer for DDGP Plus (Option B)
 
 Design:
 - Loads paradigm JSONs from ddgp/data/morph/
@@ -9,8 +10,7 @@ Design:
 - Handles middle/passive/active, person and number, and reconstructs a candidate lemma (stem + ω)
 - Uses irregular_verbs.json for supletive/lema overrides
 - Returns a dict with keys: input, normalized, simplified, pos, tense, mood, voice, person, number, lemma, notes
-\"\"\"
-
+"""
 import os, json, unicodedata, re
 
 BASE_DIR = os.path.dirname(__file__)

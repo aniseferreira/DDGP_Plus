@@ -1,31 +1,23 @@
-# app.py — versão FINAL para Morph Simple
+# app.py — DDGP Plus (versão simples)
+# Funciona exclusivamente com morph_simple.py
+# Não chama ddgp_lookup nem nenhum outro módulo
+
 import streamlit as st
 from ddgp.morph_simple import morph_analyze_simple
-from ddgp.ddgp_lookup import buscar_lema_no_ddgp   # se já existe no seu projeto
 
-st.set_page_config(page_title="DDGP Plus — Morfologia", layout="centered")
+st.set_page_config(page_title="DDGP Plus — Morfologia Simples", layout="centered")
 
 st.title("📘 DDGP Plus — Analisador Morfológico (versão simples)")
-palavra = st.text_input("Digite uma forma grega:")
+st.write("Digite uma forma grega politônica ou sem diacríticos.")
+
+palavra = st.text_input("Forma grega:", "")
 
 if palavra:
     st.subheader("🧩 Análise morfológica")
+    try:
+        resultado = morph_analyze_simple(palavra)
+        st.json(resultado)
+    except Exception as e:
+        st.error("Erro interno na análise morfológica.")
+        st.code(str(e))
 
-    resultado = morph_analyze_simple(palavra)
-    st.json(resultado)
-
-    # -----------------------
-    # CONSULTA AO DDGP
-    # -----------------------
-    lema = resultado.get("lema")
-
-    st.subheader("📚 Dicionário DDGP")
-
-    if lema:
-        dados = buscar_lema_no_ddgp(lema)
-        if dados:
-            st.json(dados)
-        else:
-            st.error("Nenhum verbete encontrado para este lema.")
-    else:
-        st.warning("Nenhum lema identificado pela morfologia.")

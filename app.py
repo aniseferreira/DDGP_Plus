@@ -5,6 +5,71 @@ import unicodedata
 
 from ddgp.morph_v3 import analyze
 
+# ----------------------------
+# Tradução de rótulos técnicos
+# ----------------------------
+
+TRAD_CASE = {
+    "nom": "nominativo",
+    "gen": "genitivo",
+    "dat": "dativo",
+    "acc": "acusativo",
+    None: None
+}
+
+TRAD_GENDER = {
+    "masc": "masculino",
+    "fem": "feminino",
+    "neut": "neutro",
+    None: None
+}
+
+TRAD_NUMBER = {
+    "sg": "singular",
+    "pl": "plural",
+    None: None
+}
+
+TRAD_POS = {
+    "noun": "substantivo",
+    "adj": "adjetivo",
+    "noun/adj": "substantivo/adjetivo",
+    "verb": "verbo",
+    "participle": "particípio",
+    "art": "artigo",
+    "pron": "pronome",
+    "num": "numeral",
+    None: None
+}
+
+# tempos e vozes
+TRAD_TENSE = {
+    "present": "presente",
+    "pres": "presente",
+    "fut": "futuro",
+    "future": "futuro",
+    "aor": "aoristo",
+    "aor1": "aoristo",
+    "perf": "perfeito",
+    None: None
+}
+
+TRAD_VOICE = {
+    "act": "ativa",
+    "mid": "média",
+    "pass": "passiva",
+    None: None
+}
+
+# pessoas verbais
+TRAD_PERSON = {
+    "1": "1ª pessoa",
+    "2": "2ª pessoa",
+    "3": "3ª pessoa",
+    None: None
+}
+
+
 
 BASE_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")

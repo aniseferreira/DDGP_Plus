@@ -81,4 +81,4 @@ if st.button("Analisar"):
 # Rodapé
 # --------------------------------------------------------------------
 st.markdown("---")
-st.caption("DDGP Plus — Projeto lexical-morfológico para Grego Antigo • 2025 • créditos do DDGP em http://hipatia.fclar.unesp.br")
+st.caption("DDGP Plus — Projeto lexical-morfológico para Grego Antigo • 2025")

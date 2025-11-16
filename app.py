@@ -122,6 +122,20 @@ if word:
         st.warning("A análise morfológica não retornou lema.")
         st.stop()
 
+    # --- Traduzir campos do "best" ---
+def traduzir(valor, mapa):
+    return mapa.get(valor, valor)
+
+if best:
+    best["pos"] = traduzir(best.get("pos"), TRAD_POS)
+    best["case"] = traduzir(best.get("case"), TRAD_CASE)
+    best["gender"] = traduzir(best.get("gender"), TRAD_GENDER)
+    best["number"] = traduzir(best.get("number"), TRAD_NUMBER)
+    best["tense"] = traduzir(best.get("tense"), TRAD_TENSE)
+    best["voice"] = traduzir(best.get("voice"), TRAD_VOICE)
+    best["person"] = traduzir(best.get("person"), TRAD_PERSON)
+
+
     st.subheader("📘 Dicionário DDGP")
 
     simple_input = simplify(word)

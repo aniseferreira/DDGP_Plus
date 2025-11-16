@@ -1,167 +1,93 @@
+# app.py — DDGP Plus (Morph Simple)
+# -*- coding: utf-8 -*-
+
 import streamlit as st
 import json
 import os
 import unicodedata
 
-from ddgp.morph_v3 import analyze
-
-# ----------------------------
-# Tradução de rótulos técnicos
-# ----------------------------
-
-TRAD_CASE = {
-    "nom": "nominativo",
-    "gen": "genitivo",
-    "dat": "dativo",
-    "acc": "acusativo",
-    None: None
-}
-
-TRAD_GENDER = {
-    "masc": "masculino",
-    "fem": "feminino",
-    "neut": "neutro",
-    None: None
-}
-
-TRAD_NUMBER = {
-    "sg": "singular",
-    "pl": "plural",
-    None: None
-}
-
-TRAD_POS = {
-    "noun": "substantivo",
-    "adj": "adjetivo",
-    "noun/adj": "substantivo/adjetivo",
-    "verb": "verbo",
-    "participle": "particípio",
-    "art": "artigo",
-    "pron": "pronome",
-    "num": "numeral",
-    None: None
-}
-
-# tempos e vozes
-TRAD_TENSE = {
-    "present": "presente",
-    "pres": "presente",
-    "fut": "futuro",
-    "future": "futuro",
-    "aor": "aoristo",
-    "aor1": "aoristo",
-    "perf": "perfeito",
-    None: None
-}
-
-TRAD_VOICE = {
-    "act": "ativa",
-    "mid": "média",
-    "pass": "passiva",
-    None: None
-}
-
-# pessoas verbais
-TRAD_PERSON = {
-    "1": "1ª pessoa",
-    "2": "2ª pessoa",
-    "3": "3ª pessoa",
-    None: None
-}
-
-
-
-BASE_DIR = os.path.dirname(__file__)
-DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
-
-
-def load_json(fname):
-    path = os.path.join(DATA_DIR, fname)
+# ==============================
+#  Utils
+# ==============================
+def load_json(path):
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
-
-# === DDGP DATA ===
-INDEX_FORMAS = load_json("ddgp_forma_to_lema.json")
-INDEX_LEMAS = load_json("ddgp_index_lemas.json")
-LEXICON = load_json("ddgp3x_entry.json")
-
+def normalize(text):
+    return unicodedata.normalize("NFC", text or "").strip()
 
 def simplify(text):
-    """Remove diacríticos e normaliza."""
-    return ''.join(
-        ch for ch in unicodedata.normalize("NFD", text)
-        if not unicodedata.combining(ch)
-    ).lower()
+    return ''.join(ch for ch in unicodedata.normalize("NFD", text) if not unicodedata.combining(ch))
 
 
-# ================================
-#     INTERFACE STREAMLIT
-# ================================
+# ==============================
+#  Paths
+# ==============================
+BASE_DIR = os.path.dirname(__file__)
+DDGP_DATA = os.path.join(BASE_DIR, "ddgp", "data")
 
-st.title("DDGP Plus — Morph V3")
+# índices DDGP
+INDEX_FORMAS = load_json(os.path.join(DDGP_DATA, "ddgp_index_formas_final.json"))
+INDEX_LEMAS  = load_json(os.path.join(DDGP_DATA, "ddgp_index_lemas.json"))
+FORMA_TO_LEMA = load_json(os.path.join(DDGP_DATA, "ddgp_forma_to_lema.json"))
+
+# dicionário completo
+LEXICON = load_json(os.path.join(DDGP_DATA, "ddgp3x_entry.json"))
+
+# morfologia simples
+from ddgp.morph_simple import morph_analyze_simple
 
 
-word = st.text_input("Digite uma forma grega:", "")
+# ==============================
+#   APP
+# ==============================
+st.title("📘 DDGP Plus — Analisador Morfológico (versão simples)")
 
-if word:
+palavra = st.text_input("Digite uma forma grega:", "")
 
-    st.subheader("🧩 Morph V3 — Análise morfológica")
+if palavra:
+    st.subheader("🧩 Análise morfológica")
 
-    res = analyze(word)
-    st.json(res)
+    resultado = morph_analyze_simple(palavra)
+    st.json(resultado)
 
-    # Melhor candidato (V3 escolhe automaticamente)
-    best = res.get("best")
-    if not best:
-        st.warning("Nenhuma análise morfológica encontrada.")
+    # ------------------------------------------------
+    # 1) Procurar lema via forma → lema direto
+    # ------------------------------------------------
+    forma_s = simplify(palavra)
+
+    lema = None
+
+    if forma_s in FORMA_TO_LEMA:
+        lema = FORMA_TO_LEMA[forma_s]
+    else:
+        # ------------------------------------------------
+        # 2) Usar lema da morfologia simples
+        # ------------------------------------------------
+        lema = resultado.get("lema")
+
+    # Se ainda não houver lema, parar
+    if not lema:
+        st.warning("A análise não retornou um lema e não há correspondência no índice.")
         st.stop()
 
-    lemma = best.get("lemma")
-    if not lemma:
-        st.warning("A análise morfológica não retornou lema.")
-        st.stop()
-
-    # --- Traduzir campos do "best" ---
-def traduzir(valor, mapa):
-    return mapa.get(valor, valor)
-
-if best:
-    best["pos"] = traduzir(best.get("pos"), TRAD_POS)
-    best["case"] = traduzir(best.get("case"), TRAD_CASE)
-    best["gender"] = traduzir(best.get("gender"), TRAD_GENDER)
-    best["number"] = traduzir(best.get("number"), TRAD_NUMBER)
-    best["tense"] = traduzir(best.get("tense"), TRAD_TENSE)
-    best["voice"] = traduzir(best.get("voice"), TRAD_VOICE)
-    best["person"] = traduzir(best.get("person"), TRAD_PERSON)
+    # Normalizar lema
+    lema_norm = simplify(lema)
 
 
-    st.subheader("📘 Dicionário DDGP")
+    # ==============================
+    #  Busca no dicionário DDGP
+    # ==============================
+    st.subheader("📖 Verbete no DDGP")
 
-    simple_input = simplify(word)
-    simple_lemma = simplify(lemma)
+    if lema_norm in INDEX_LEMAS:
+        entry_id = INDEX_LEMAS[lema_norm]
 
-    # -------------------------------
-    # 1) PRIMEIRO, LOOKUP POR FORMA
-    # -------------------------------
-    if simple_input in INDEX_FORMAS:
-        entry_id = INDEX_FORMAS[simple_input]
-        entry = LEXICON.get(str(entry_id))
-        if entry:
-            st.markdown(f"### **{entry['gword']}**")
-            st.write(entry["pdesc"])
-            st.stop()
-
-    # ---------------------------------
-    # 2) SEGUNDO, LOOKUP POR LEMA
-    # ---------------------------------
-    if simple_lemma in INDEX_LEMAS:
-        entry_id = INDEX_LEMAS[simple_lemma]
         entry = LEXICON.get(str(entry_id))
         if entry:
             st.markdown(f"### **{entry['gword']}**")
             st.write(entry["pdesc"])
         else:
-            st.error("ID encontrado, mas entrada não está no ddgp3x_entry.json.")
+            st.error("ID encontrado no índice, mas verbete não localizado no dicionário JSON.")
     else:
-        st.warning("Nenhum verbete encontrado para forma nem para o lema.")
+        st.warning("Nenhum verbete encontrado no DDGP para este lema.")

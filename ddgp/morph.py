@@ -1,29 +1,27 @@
-# ddgp/morph.py — Comprehensive paradigm-based analyzer (Option B)
+# ddgp/morph.py — Enhanced morphological analyzer with noun/adjective recognition (Option B+)
 # -*- coding: utf-8 -*-
 """
-Comprehensive morphological analyzer for DDGP Plus (Option B)
-
-Design:
-- Loads paradigm JSONs from ddgp/data/morph/
-- Matches longest possible endings (priority by length)
-- Recognizes: present, imperfect, future (thematic/sigmatic), aorist I (sigmatic), aorist passive, perfect, participles
-- Handles middle/passive/active, person and number, and reconstructs a candidate lemma (stem + ω)
-- Uses irregular_verbs.json for supletive/lema overrides
-- Returns a dict with keys: input, normalized, simplified, pos, tense, mood, voice, person, number, lemma, notes
+Comprehensive morphological analyzer for DDGP Plus (enhanced):
+- Loads morph JSON paradigm data from ddgp/data/morph/
+- Recognizes verb paradigms (as before) and also noun/adjective declensional endings
+- Reconstructs candidate lemma for nouns/adjectives (nominative singular) using heuristic rules
+- Returns dictionary with morphological features
 """
+
 import os, json, unicodedata, re
 
 BASE_DIR = os.path.dirname(__file__)
 MORPH_DATA_DIR = os.path.join(BASE_DIR, "data", "morph")
 
-def _load_json(filename):
-    path = os.path.join(MORPH_DATA_DIR, filename)
+def _load_json(name):
+    path = os.path.join(MORPH_DATA_DIR, name)
     if not os.path.exists(path):
-        raise FileNotFoundError(f"Missing morph data file: {path}")
+        # if file missing, return empty dict
+        return {}
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
-# Load paradigm files
+# load json tables if present (they may be simple mappings)
 PRES_A = _load_json("endings_present_active.json")
 PRES_M = _load_json("endings_present_middle.json")
 IMP_A = _load_json("endings_imperfect_active.json")
@@ -38,132 +36,141 @@ PERF_M = _load_json("endings_perfect_middle.json")
 PARTS = _load_json("participles.json")
 IRREG = _load_json("irregular_verbs.json")
 
-# Utilities
-def normalize(text: str) -> str:
+# noun/adjective declension endings mapping: ending -> features
+# We'll try to load if user provided file, else use built-in minimal table
+DECL_FILE = os.path.join(MORPH_DATA_DIR, "declensions.json")
+if os.path.exists(DECL_FILE):
+    DECL = _load_json("declensions.json")
+else:
+    # Minimal declension table (common Classical endings) for nouns/adjectives (simplified)
+    # keys are endings (in simplified form, without diacritics)
+    DECL = {
+        "ος": {"pos":"noun","case":"nom","number":"sg","gender":"masc"},
+        "ου": {"pos":"noun","case":"gen","number":"sg","gender":"masc"},
+        "ῳ": {"pos":"noun","case":"dat","number":"sg","gender":"masc"},
+        "ον": {"pos":"noun","case":"acc","number":"sg","gender":"masc"},
+        "οι": {"pos":"noun","case":"nom","number":"pl","gender":"masc"},
+        "ων": {"pos":"noun","case":"gen","number":"pl","gender":"masc"},
+        "οις": {"pos":"noun","case":"dat","number":"pl","gender":"masc"},
+        "ους": {"pos":"noun","case":"acc","number":"pl","gender":"masc"},
+        "α": {"pos":"noun","case":"nom","number":"sg","gender":"fem"},
+        "ας": {"pos":"noun","case":"acc","number":"sg","gender":"fem"},
+        "ης": {"pos":"noun","case":"nom","number":"sg","gender":"masc"},
+        "ων_adj": {"pos":"adj","case":"gen","number":"pl","gender":"all"},
+        # a few neuter patterns
+        "ον_neut": {"pos":"noun","case":"nom","number":"sg","gender":"neut"},
+        "α_neut": {"pos":"noun","case":"nom","number":"pl","gender":"neut"}
+    }
+
+def normalize(text):
     return unicodedata.normalize("NFC", text or "").strip()
 
-def strip_diacritics(text: str) -> str:
+def strip_diacritics(text):
     return "".join(ch for ch in unicodedata.normalize("NFD", text or "") if not unicodedata.combining(ch))
 
-def simplify(text: str) -> str:
+def simplify(text):
     return strip_diacritics(normalize(text)).lower()
 
-# Match endings (longest-first) across one or more dicts
-def match_endings(simplified_form: str, *ending_dicts):
-    candidates = []
-    for ed in ending_dicts:
-        for ending in sorted(ed.keys(), key=len, reverse=True):
-            end_s = simplify(ending)
-            if simplified_form.endswith(end_s):
-                info = dict(ed[ending]) if isinstance(ed[ending], dict) else {"code": ed[ending]}
-                info["_ending"] = ending
-                info["_ending_s"] = end_s
-                candidates.append(info)
-    # return candidates ordered by matched ending length descending
-    candidates.sort(key=lambda c: len(c.get("_ending_s", "")), reverse=True)
-    return candidates
+# helper: match endings longest-first from a dict of endings
+def match_endings_from_dict(simplified, endings_dict):
+    matches = []
+    for ending in sorted(endings_dict.keys(), key=len, reverse=True):
+        end_s = simplify(ending)
+        if simplified.endswith(end_s):
+            info = dict(endings_dict[ending])
+            info["_ending"] = ending
+            info["_ending_s"] = end_s
+            matches.append(info)
+    return matches
 
-# Reconstruct lemma: naive stem + ω; will be refined with irregular list or by lexicon lookup
-def reconstruct_lemma_from_stem(simplified_stem: str):
-    # return with combining removed, add final omega (lowercase)
-    stem = strip_diacritics(simplified_stem)
-    # simple heuristics for contraction: if stem ends with vowel, keep as-is; lemma = stem + 'ω'
-    return stem + "ω"
+# reconstruct noun/adjective lemma (nom. sg.) from stem + heuristic suffix
+def reconstruct_nom_sg_from_stem(stem_s, match_info):
+    # common heuristic: if match gen plural 'ων', lemma often ends with 'ος' (masculine)
+    case = match_info.get("case")
+    gender = match_info.get("gender")
+    if case == "gen" and match_info.get("number") == "pl":
+        if gender == "masc" or gender == "all" or gender is None:
+            return stem_s + "ος"
+        if gender == "neut":
+            return stem_s + "ον"
+    # gen sg 'ου' -> nominative often 'ος' or 'ης' depending; default to 'ος'
+    if case == "gen" and match_info.get("number") == "sg":
+        if gender == "masc" or gender is None:
+            return stem_s + "ος"
+    # accusative plural 'ους' -> nominative 'ος'
+    if match_info.get("case") == "acc" and match_info.get("number") == "pl":
+        return stem_s + "ος"
+    # fallback: return stem + 'ος'
+    return stem_s + "ος"
 
-# Main analysis function
-def morph_analyze(word: str):
+# Reconstruct verb lemma naive
+def reconstruct_verb_lemma(stem_s):
+    return stem_s + "ω"
+
+# combine paradigms for verbs as earlier
+VERB_PARADIGMS = [FUT_M, FUT_A, FUT_P, A1_A, A1_M, A1_P, PERF_M, PERF_A, IMP_A, PRES_M, PRES_A]
+
+def morph_analyze(word):
     w = normalize(word)
     s = simplify(w)
-    result = {
-        "input": word,
-        "normalized": w,
-        "simplified": s,
-        "pos": None,
-        "tense": None,
-        "mood": None,
-        "voice": None,
-        "person": None,
-        "number": None,
-        "lemma": None,
-        "notes": []
-    }
+    result = {"input": word, "normalized": w, "simplified": s, "pos": None, "tense": None, "mood": None, "voice": None, "person": None, "number": None, "case": None, "gender": None, "lemma": None, "notes": []}
 
     if not s:
         return result
 
-    # 0. irregular lookup: if simplified form starts with irregular lemma key, use it
-    for key, info in IRREG.items():
+    # 0. irregular verbs lookup
+    for key, val in IRREG.items():
         if s.startswith(simplify(key)):
-            # IRREG may map to a lemma or contain tags
-            lemma = info.get("lemma") if isinstance(info, dict) else info
-            result.update({"pos":"verb", "lemma":lemma})
-            result["notes"].append(f"irregular_match:{key}")
+            result.update({"pos":"verb","lemma": val if isinstance(val,str) else val.get("lemma")})
+            result["notes"].append("irregular")
             return result
 
-    # 1. participles (try first — participles often have distinct endings)
-    part_cands = match_endings(s, PARTS)
-    if part_cands:
-        best = part_cands[0]
-        result["pos"] = "participle"
-        result["tense"] = best.get("tense")
-        result["voice"] = best.get("voice")
-        result["gender"] = best.get("gender")
-        result["number"] = best.get("number")
+    # 1. try noun/adjective declension matches (longest endings first)
+    decl_matches = match_endings_from_dict(s, DECL)
+    if decl_matches:
+        best = decl_matches[0]
+        result["pos"] = best.get("pos")
         result["case"] = best.get("case")
-        result["notes"].append(f"participle_end:{best.get('_ending')}")
-        # lemma heuristic: remove ending and add ω
+        result["number"] = best.get("number")
+        result["gender"] = best.get("gender")
+        # compute stem (remove ending)
         stem_s = s[:-len(best.get("_ending_s"))] if best.get("_ending_s") else s
-        result["lemma"] = reconstruct_lemma_from_stem(stem_s)
+        # reconstruct lemma (nominative singular heuristic)
+        result["lemma"] = reconstruct_nom_sg_from_stem(stem_s, best)
+        result["notes"].append("declension_matched:"+best.get("_ending"))
         return result
 
-    # 2. priority paradigms list (order matters)
-    paradigms = [
-        (FUT_M, "future"),
-        (FUT_A, "future"),
-        (FUT_P, "future"),
-        (A1_A, "aorist"),
-        (A1_M, "aorist"),
-        (A1_P, "aorist"),
-        (PERF_M, "perfect"),
-        (PERF_A, "perfect"),
-        (IMP_A, "imperfect"),
-        (PRES_M, "present"),
-        (PRES_A, "present"),
-    ]
+    # 2. participles
+    part_cands = match_endings_from_dict(s, PARTS)
+    if part_cands:
+        best = part_cands[0]
+        result.update({"pos":"participle","tense":best.get("tense"),"voice":best.get("voice")})
+        stem_s = s[:-len(best.get("_ending_s"))] if best.get("_ending_s") else s
+        result["lemma"] = reconstruct_verb_lemma(stem_s)
+        result["notes"].append("participle_matched:"+best.get("_ending"))
+        return result
 
-    for pd, pd_tense in paradigms:
-        cands = match_endings(s, pd)
-        if cands:
-            best = cands[0]
-            # set basic fields
+    # 3. verbs: try paradigms in priority order
+    for pd in VERB_PARADIGMS:
+        cand = match_endings_from_dict(s, pd)
+        if cand:
+            best = cand[0]
             result["pos"] = "verb"
-            result["tense"] = best.get("tense", pd_tense)
+            result["tense"] = best.get("tense")
             result["voice"] = best.get("voice")
-            # person and number if present in mapping
-            if "person" in best:
+            # person/number if available
+            if best.get("person"):
                 result["person"] = best.get("person")
-            if "number" in best:
+            if best.get("number"):
                 result["number"] = best.get("number")
-            # sometimes the dict stores labels like '1sg_fut_act' — try to parse them
-            codevals = best.get("code") or ""
-            # parse person/number from codes like '1sg' or '1pl' if available
-            m = re.search(r'([123])\s*pl|([123])\s*sg', codevals)
-            # fallback parse for patterns
-            # compute lemma candidate by removing matched ending from simplified form
             stem_s = s[:-len(best.get("_ending_s"))] if best.get("_ending_s") else s
-            lemma_candidate = reconstruct_lemma_from_stem(stem_s)
-            result["lemma"] = lemma_candidate
-            result["notes"].append(f"ending_matched:{best.get('_ending')}")
+            result["lemma"] = reconstruct_verb_lemma(stem_s)
+            result["notes"].append("verb_matched:"+best.get("_ending"))
             return result
 
-    # 3. fallback: if string contains Greek letters, propose simplified as lemma
+    # 4. fallback: if looks Greek, propose stripped form as lemma
     if re.search(r'[\u0370-\u03FF\u1F00-\u1FFF]', s):
         result["lemma"] = strip_diacritics(s)
-        result["notes"].append("fallback_lemma_from_form")
+        result["pos"] = "unknown"
+        result["notes"].append("fallback_lemma")
     return result
-
-# module test if run as script
-if __name__ == "__main__":
-    tests = ["βουλεύσομεν","βουλεύσομαι","εἶπον","λέγω","ἔλυσα","λέγουσι","λελυκως","ἀγαπῶ","ἤγαγον"]
-    for t in tests:
-        print(t, "->", morph_analyze(t))

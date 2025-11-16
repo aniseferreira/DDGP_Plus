@@ -1,0 +1,42 @@
+{
+  "ς": {
+    "case": "nom",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "ος_gen": {
+    "case": "gen",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "ι": {
+    "case": "dat",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "α": {
+    "case": "acc",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "ες": {
+    "case": "nom",
+    "number": "pl",
+    "gender": "masc"
+  },
+  "ων": {
+    "case": "gen",
+    "number": "pl",
+    "gender": "masc"
+  },
+  "σι": {
+    "case": "dat",
+    "number": "pl",
+    "gender": "masc"
+  },
+  "ας": {
+    "case": "acc",
+    "number": "pl",
+    "gender": "masc"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "ος": {
+    "case": "nom",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "η": {
+    "case": "nom",
+    "number": "sg",
+    "gender": "fem"
+  },
+  "ον": {
+    "case": "nom",
+    "number": "sg",
+    "gender": "neut"
+  }
+}

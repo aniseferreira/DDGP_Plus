@@ -1,0 +1,12 @@
+{
+  "ης": {
+    "case": "nom",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "ες": {
+    "case": "nom",
+    "number": "sg",
+    "gender": "neut"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "ος": {
+    "case": "nom",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "ου": {
+    "case": "gen",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "ῳ": {
+    "case": "dat",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "ον": {
+    "case": "acc",
+    "number": "sg",
+    "gender": "masc"
+  },
+  "οι": {
+    "case": "nom",
+    "number": "pl",
+    "gender": "masc"
+  },
+  "ων": {
+    "case": "gen",
+    "number": "pl",
+    "gender": "masc"
+  },
+  "οις": {
+    "case": "dat",
+    "number": "pl",
+    "gender": "masc"
+  },
+  "ους": {
+    "case": "acc",
+    "number": "pl",
+    "gender": "masc"
+  }
+}

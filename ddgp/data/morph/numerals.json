@@ -1,0 +1,17 @@
+{
+  "εἷς": {
+    "case": "nom",
+    "gender": "masc",
+    "number": "sg"
+  },
+  "μία": {
+    "case": "nom",
+    "gender": "fem",
+    "number": "sg"
+  },
+  "ἕν": {
+    "case": "nom",
+    "gender": "neut",
+    "number": "sg"
+  }
+}

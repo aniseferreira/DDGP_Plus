@@ -3,37 +3,6 @@
 import streamlit as st
 import json, os, unicodedata
 
-# ----------------------------------------------------------
-# LOGO no canto esquerdo (header do app)
-# ----------------------------------------------------------
-
-st.markdown(
-    """
-    <style>
-    .ddgp-header {
-        display: flex;
-        align-items: center;
-        padding: 0px 0px 15px 0px;
-    }
-    .ddgp-header img {
-        height: 48px;
-        margin-right: 12px;
-    }
-    .ddgp-title {
-        font-size: 1.6em;
-        font-weight: 700;
-        padding-top: 8px;
-    }
-    </style>
-
-    <div class="ddgp-header">
-        <img src="https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png">
-        <div class="ddgp-title">DDGP Plus — Analisador Morfológico</div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
 
 # -------------------------
 # Importa o analisador morfológico simples

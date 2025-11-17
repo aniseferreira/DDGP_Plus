@@ -1,69 +1,82 @@
+# app.py — DDGP Plus (versão simples + dicionário)
+
 import streamlit as st
-import json
-import os
+import json, os, unicodedata
 
-# --------------------------------------------------------------------
-# Importa MORPH SIMPLES
-# --------------------------------------------------------------------
-from ddgp.morph_simple import morph_analyze_simple
+# -------------------------
+# Importa o analisador morfológico simples
+# -------------------------
+from ddgp.morph_simple import morph_analyze_simple, simplify, normalize
 
-# --------------------------------------------------------------------
-# Carrega DDGP (ddgp3x_entry.json) da pasta /ddgp/data/
-# --------------------------------------------------------------------
+# -------------------------
+# Localização dos arquivos DDGP
+# -------------------------
 BASE_DIR = os.path.dirname(__file__)
-DDGP_PATH = os.path.join(BASE_DIR, "ddgp", "data", "ddgp3x_entry.json")
+DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
 
-def load_ddgp():
-    try:
-        with open(DDGP_PATH, "r", encoding="utf-8") as f:
+def load_json(name):
+    path = os.path.join(DATA_DIR, name)
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
-    except Exception as e:
-        return None
+    return {}
 
-DDGP = load_ddgp()
+# Carrega todos os índices
+DDGP_ENTRIES = load_json("ddgp3x_entry.json")
+INDEX_LEMAS = load_json("ddgp_index_lemas.json")
+INDEX_FORMAS = load_json("ddgp_index_formas_final.json")
+FORMA_TO_LEMA = load_json("ddgp_forma_to_lema.json")
 
-# Indexa lemas → entrada completa
-DDGP_INDEX = {}
-if DDGP:
-    for item in DDGP:
-        # lema = gword até vírgula ou espaço
-        lemma_raw = item.get("gword","").split(",")[0].strip()
-        DDGP_INDEX[lemma_raw] = item
+# -------------------------
+# Função de lookup no dicionário
+# -------------------------
+def buscar_ddgp_por_lema(lema_simplificado):
+    """Retorna lista de entradas DDGP cujo lema corresponde ao lema simplificado."""
+    if lema_simplificado in INDEX_LEMAS:
+        id_ = INDEX_LEMAS[lema_simplificado]
+        ent = DDGP_ENTRIES.get(id_)
+        return [ent] if ent else []
+    return []
 
-# --------------------------------------------------------------------
-# Lookup no DDGP
-# --------------------------------------------------------------------
-def lookup_lema(lema):
-    if not lema:
-        return None
+def buscar_ddgp_por_forma(form_simplificada):
+    """Busca entradas cujas formas aparecem em gword (index de variantes)."""
+    ids = INDEX_FORMAS.get(form_simplificada, [])
+    return [DDGP_ENTRIES[i] for i in ids if i in DDGP_ENTRIES]
 
-    lema_simpl = lema.replace("́","").replace("̀","")
-    for k,v in DDGP_INDEX.items():
-        if k == lema or k == lema_simpl:
-            return v
+# -------------------------
+# Interface Streamlit
+# -------------------------
+st.title("📘 DDGP Plus — Analisador Morfológico + Dicionário")
+st.write("Digite uma forma grega politônica ou sem diacríticos.")
 
-    return None
-
-# --------------------------------------------------------------------
-# Interface
-# --------------------------------------------------------------------
-st.title("📘 DDGP Plus — Morfologia + Dicionário (versão simples)")
-
-palavra = st.text_input("Digite uma forma grega politônica ou sem diacríticos.")
+palavra = st.text_input("Forma grega:")
 
 if palavra:
     st.subheader("🧩 Análise morfológica")
     resultado = morph_analyze_simple(palavra)
     st.json(resultado)
 
-    lema = resultado.get("lema")
+    st.subheader("📘 Dicionário DDGP")
 
-    st.subheader("📗 Dicionário DDGP (lema)")
-    info = lookup_lema(lema)
+    simp = simplify(palavra)
 
-    if info:
-        st.json(info)
+    # 1) lookup direto pela forma
+    entradas = buscar_ddgp_por_forma(simp)
+
+    # 2) lookup pelo lema identificado pela morfologia
+    if not entradas and resultado.get("lema"):
+        lema_simp = simplify(resultado["lema"])
+        entradas = buscar_ddgp_por_lema(lema_simp)
+
+    # 3) fallback: forma → lema mapeado
+    if not entradas and simp in FORMA_TO_LEMA:
+        lema_simp = FORMA_TO_LEMA[simp]
+        entradas = buscar_ddgp_por_lema(lema_simp)
+
+    # Exibição
+    if entradas:
+        for e in entradas:
+            st.markdown(f"### **{e['gword']}** (ID {e['id']})")
+            st.write(e["pdesc"])
     else:
-        st.info("Nenhuma entrada do DDGP encontrada para este lema.")
-
-
+        st.error("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")

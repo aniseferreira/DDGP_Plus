@@ -77,7 +77,11 @@ if palavra:
     if entradas:
         for e in entradas:
             st.markdown(f"### **{e['gword']}** (ID {e['id']})")
-            st.markdown(
+            st.write(e["pdesc"])
+    else:
+        st.error("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
+
+st.markdown(
     """
     <hr>
 
@@ -97,8 +101,5 @@ if palavra:
     unsafe_allow_html=True
 )
 
-            st.write(e["pdesc"])
-    else:
-        st.error("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
 
 

@@ -82,4 +82,19 @@ if palavra:
     
     else:
         st.error("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
+# --- RODAPÉ ---
+st.markdown(
+    """
+    <hr style='margin-top: 50px; margin-bottom: 20px;'>
+    <div style='font-size: 0.9rem; line-height: 1.4; color: #555;'>
+        <strong>DDGP Plus — Analisador Morfológico e Dicionário Digital de Grego-Português.</strong><br>
+        Versão 2025. Disponível em: 
+        <a href="https://ddgp-plus.streamlit.app" target="_blank">https://ddgp-plus.streamlit.app</a><br><br>
 
+        Baseado no Dicionário Digital de Grego-Português (DDGP e DGP), 
+        Projeto Letras Clássicas Digitais / UNESP.<br>
+        Licenciado sob <strong>CC BY–NC–ND 4.0</strong>.
+    </div>
+    """,
+    unsafe_allow_html=True
+)

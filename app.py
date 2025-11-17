@@ -7,7 +7,8 @@ import unicodedata
 import streamlit as st
 
 # configure page (title + favicon)
-LOGO_URL = "http://hipatia.fclar.unesp.br/3x/media/ddgp.png"  # original logo URL
+LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"  
+# original logo URL
 # If you prefer a local logo, put it in ddgp/static/ddgp.png and set LOGO_LOCAL = "ddgp/static/ddgp.png"
 LOGO_LOCAL = None
 

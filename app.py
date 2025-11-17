@@ -81,25 +81,7 @@ if palavra:
     else:
         st.error("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
 
-st.markdown(
-    """
-    <hr>
 
-    <div style="font-size: 0.9rem; line-height: 1.35;">
-    <strong>DDGP Plus — Analisador Morfológico e Dicionário Digital de Grego-Português.</strong><br>
-    Versão 2025. Disponível em:
-    <a href="https://ddgp-plus.streamlit.app" target="_blank">https://ddgp-plus.streamlit.app</a>.
-    <br><br>
-
-    Baseado no <em>Dicionário Digital de Grego-Português</em> (DDGP e DGP),
-    Projeto <strong>Letras Clássicas Digitais / UNESP</strong>.<br>
-
-    Licenciado sob <strong>CC BY–NC–ND 4.0</strong>.
-    </div>
-
-    """,
-    unsafe_allow_html=True
-)
 
 
 

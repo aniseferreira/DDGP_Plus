@@ -158,11 +158,12 @@ Licenciado sob **CC BY–NC–ND 4.0**.
 footer_long = """
 **Créditos e licença (detalhado)**
 
-- Base: Dicionário Digital de Grego–Português (DDGP), Projeto Letras Clássicas Digitais — FCLAr/UNESP.  
+- Base: Dicionário Digital de Grego–Português (DDGP e DGP), Projeto Letras Clássicas Digitais — FCLAr/UNESP.  
+- Responsável: Anise D'Orange Ferreira.
 - Licença do conteúdo digital: CC BY–NC–ND 4.0.  
 - Créditos aos autores da versão impressa do DGP, coordenadores e instituições conforme rodapé em hipatia.fclar.unesp.br.  
 - Desenvolvimento do front-end e integração: equipe de desenvolvimento (registro técnico disponível sob solicitação).
-- Responsável: Anise D'Orange Ferreira
+
 """
 
 # place footer in a container so HTML injection is minimal (no custom CSS)

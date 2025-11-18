@@ -1,0 +1,41 @@
+/* ------------------------------------------------------------
+   DDGP Plus — style_map.css
+   Mapa de estilos complementares
+   (ajustes finos, overrides e componentes específicos)
+------------------------------------------------------------ */
+
+/* Variáveis de cor */
+:root {
+    --ddgp-azul: #1a4d8f;
+    --ddgp-azul-claro: #3c6eb4;
+    --ddgp-cinza: #666666;
+}
+
+/* Ajustes gerais */
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+}
+
+/* Campos de entrada */
+input[type="text"] {
+    border-radius: 6px;
+    border: 1px solid #bbbbbb;
+    padding: 6px;
+}
+
+/* Caixas de resultado */
+.result-box {
+    background: #f6f8fb;
+    padding: 12px;
+    border-left: 4px solid var(--ddgp-azul);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+/* Classe auxiliar para alinhamento */
+.center {
+    text-align: center !important;
+}

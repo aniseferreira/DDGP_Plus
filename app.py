@@ -14,6 +14,40 @@ LOGO_LOCAL = None
 
 st.set_page_config(page_title="DDGP Plus — Morph & Dictionary", page_icon=LOGO_URL, layout="wide")
 
+
+# ------------------------------------------------------------
+# Carregar CSS customizado (inserido automaticamente)
+# Coloque style.css e style_map.css em /ddgp/style/
+# ------------------------------------------------------------
+from pathlib import Path
+
+def load_css(file_name: str):
+    try:
+        with open(file_name, "r", encoding="utf-8") as f:
+            css = f"<style>{f.read()}</style>"
+            st.markdown(css, unsafe_allow_html=True)
+    except FileNotFoundError:
+        # arquivo de estilo não encontrado; continuar sem falha
+        pass
+
+# paths recomendados
+style_main = "ddgp/style/style.css"
+style_map = "ddgp/style/style_map.css"
+
+# carregar se existirem
+if Path(style_main).exists():
+    load_css(style_main)
+if Path(style_map).exists():
+    load_css(style_map)
+
+# Também carrega se estiver na raiz (para desenvolvimento local)
+if Path("style.css").exists():
+    load_css("style.css")
+if Path("style_map.css").exists():
+    load_css("style_map.css")
+
+
+
 # helper utils
 def normalize(text):
     return unicodedata.normalize("NFC", (text or "")).strip()

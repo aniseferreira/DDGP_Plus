@@ -1,0 +1,1586 @@
+{
+  "eur.": {
+    "descricao": "Eurípides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "aor.": {
+    "descricao": "aoristo",
+    "tipo": "Gramatical"
+  },
+  "hom.": {
+    "descricao": "Homero ou homérico/a",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "fut.": {
+    "descricao": "futuro",
+    "tipo": "Gramatical"
+  },
+  "dat.": {
+    "descricao": "dativo",
+    "tipo": "Gramatical"
+  },
+  "du.": {
+    "descricao": "dual",
+    "tipo": "Gramatical"
+  },
+  "alc.": {
+    "descricao": "Alceu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "alcífr.": {
+    "descricao": "Alcífron",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "alcm.": {
+    "descricao": "Alcman",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "anacr.": {
+    "descricao": "Anacreonte",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "anacrt.": {
+    "descricao": "Anacreontea",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "anax.": {
+    "descricao": "Anaxágoras",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "and.": {
+    "descricao": "Andócides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "antf.": {
+    "descricao": "Antifonte",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "antíf.": {
+    "descricao": "Antífanes",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "antím.": {
+    "descricao": "Antímaco",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ap.": {
+    "descricao": "Apiano",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ar.": {
+    "descricao": "Aristófanes",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "aret.": {
+    "descricao": "Areteu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "aristd.": {
+    "descricao": "Élio Aristides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "aristóx.": {
+    "descricao": "Aristóxeno",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "arqstr.": {
+    "descricao": "Arquéstrato",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "arquíl.": {
+    "descricao": "Arquíloco",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "arquit.": {
+    "descricao": "arquitetura",
+    "tipo": "Cultural"
+  },
+  "arr.": {
+    "descricao": "Arriano",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "arstn.": {
+    "descricao": "Aristeneto",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "artem.": {
+    "descricao": "Artemidoro",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "artt.": {
+    "descricao": "Aristóteles",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "at.": {
+    "descricao": "ativo",
+    "tipo": "Gramatical"
+  },
+  "baq.": {
+    "descricao": "Baquílides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "bas.": {
+    "descricao": "Basílio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "batr.": {
+    "descricao": "Batracomiomaquia",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "cal.": {
+    "descricao": "Calímaco",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "cár.": {
+    "descricao": "Cáriton",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ceb.": {
+    "descricao": "Cebes",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "clem.": {
+    "descricao": "Clemente",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "col.": {
+    "descricao": "coletivo",
+    "tipo": "Gramatical"
+  },
+  "cor.": {
+    "descricao": "Corina",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "crat.": {
+    "descricao": "Cratino",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "cris.": {
+    "descricao": "Dion Crisóstomo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "crít.": {
+    "descricao": "Crítias",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ct.": {
+    "descricao": "Ctésias",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "decr.": {
+    "descricao": "Decreto",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "dem.": {
+    "descricao": "demonstrativo (gram.) ou Demóstenes (autor)",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "demócr.": {
+    "descricao": "Demócrito",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "din.": {
+    "descricao": "Dinarco",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "diógn.": {
+    "descricao": "Diógenes de Sinope",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "dion.": {
+    "descricao": "Dionísio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "diosc.": {
+    "descricao": "Dioscórides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "el.": {
+    "descricao": "Cláudio Eliano",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "emp.": {
+    "descricao": "Empédocles",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "en.": {
+    "descricao": "Eneu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ep.": {
+    "descricao": "Epicuro",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "epic.": {
+    "descricao": "Epicarmo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "epict.": {
+    "descricao": "Epicteto",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "epigr.": {
+    "descricao": "Epigramas diversos",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "er.": {
+    "descricao": "Eratóstenes",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "es.": {
+    "descricao": "Esopo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ésql.": {
+    "descricao": "Ésquilo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ésqn.": {
+    "descricao": "Ésquines",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "est.": {
+    "descricao": "Estobeu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "estes.": {
+    "descricao": "Estesícoro",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "estr.": {
+    "descricao": "Estrabão",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "eucl.": {
+    "descricao": "Euclides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "eup.": {
+    "descricao": "Êupolis",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "eus.": {
+    "descricao": "Eusébio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "feréc.": {
+    "descricao": "Ferécides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ferécr.": {
+    "descricao": "Ferécrates",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "fil.": {
+    "descricao": "Filetas",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "filóc.": {
+    "descricao": "Filócoro",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "filod.": {
+    "descricao": "Filodemo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "filol.": {
+    "descricao": "Filolau",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "filós.": {
+    "descricao": "Filóstrato",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "foc.": {
+    "descricao": "Focílides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "fr.": {
+    "descricao": "Frínico",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "gal.": {
+    "descricao": "Galeno",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "hec.": {
+    "descricao": "Hecateu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "hel.": {
+    "descricao": "Heliodoro",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "her.": {
+    "descricao": "Heródoto",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "herácl.": {
+    "descricao": "Heráclito",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "herm.": {
+    "descricao": "Hermes Trismegisto",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "hermóg.": {
+    "descricao": "Hermógenes",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "herod.": {
+    "descricao": "Herodiano",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "herond.": {
+    "descricao": "Herondas",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "hes.": {
+    "descricao": "Hesíodo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "hesíq.": {
+    "descricao": "Hesíquio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "hin.": {
+    "descricao": "Hinos Homéricos",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "hip.": {
+    "descricao": "Hipônax",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "hipér.": {
+    "descricao": "Hipérides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "hipócr.": {
+    "descricao": "Hipócrates",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "inscr.": {
+    "descricao": "Inscrições diversas",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "is.": {
+    "descricao": "Iseu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "isócr.": {
+    "descricao": "Isócrates",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "jâmbl.": {
+    "descricao": "Jâmblico",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "jos.": {
+    "descricao": "Flávio Josefo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "jul.": {
+    "descricao": "Juliano",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "lib.": {
+    "descricao": "Libânio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "lic.": {
+    "descricao": "Licurgo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "lícofr.": {
+    "descricao": "Lícofron",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "lís.": {
+    "descricao": "Lísias",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "long.": {
+    "descricao": "Longino",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "luc.": {
+    "descricao": "Luciano",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "macr.": {
+    "descricao": "Macróbio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "man.": {
+    "descricao": "Maneton",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "máx.": {
+    "descricao": "Máximo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "mel.": {
+    "descricao": "Meleagro",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "men.": {
+    "descricao": "Menandro",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "mimn.": {
+    "descricao": "Mimnermo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "mos.": {
+    "descricao": "Mosco",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "mus.": {
+    "descricao": "Museu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "naz.": {
+    "descricao": "Gregório de Nazianzo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "nic.": {
+    "descricao": "Nicandro",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "nis.": {
+    "descricao": "Gregório de Nissa",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "n.t.": {
+    "descricao": "Novo Testamento",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "op.": {
+    "descricao": "oposição",
+    "tipo": "Gramatical"
+  },
+  "orác.": {
+    "descricao": "Oráculos",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "oríg.": {
+    "descricao": "Orígines",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "orf.": {
+    "descricao": "Orfeu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "pan.": {
+    "descricao": "Paníase",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "parm.": {
+    "descricao": "Parmênides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "part.": {
+    "descricao": "particípio",
+    "tipo": "Gramatical"
+  },
+  "paus.": {
+    "descricao": "Pausânias",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "pínd.": {
+    "descricao": "Píndaro",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "pis.": {
+    "descricao": "Pisístrato",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "pit.": {
+    "descricao": "Pitágoras",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "plat.": {
+    "descricao": "Platão",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "plot.": {
+    "descricao": "Plotino",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "plut.": {
+    "descricao": "Plutarco",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "pol.": {
+    "descricao": "Políbio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "poln.": {
+    "descricao": "Polieno",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "porf.": {
+    "descricao": "Porfírio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "prát.": {
+    "descricao": "Prátinas",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "prot.": {
+    "descricao": "Protágoras",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "pt.": {
+    "descricao": "Cláudio Ptolomeu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "quint.": {
+    "descricao": "Quintiliano",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "sept.": {
+    "descricao": "Septuaginta",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "sib.": {
+    "descricao": "Oráculos Sibilinos",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "sim.": {
+    "descricao": "Simônides de Ceos",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "sin.": {
+    "descricao": "sinônimo",
+    "tipo": "Gramatical"
+  },
+  "sóf.": {
+    "descricao": "Sófocles",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "sól.": {
+    "descricao": "Sólon",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "suet.": {
+    "descricao": "Suetônio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "tal.": {
+    "descricao": "Tales",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "tem.": {
+    "descricao": "Temístio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "teócr.": {
+    "descricao": "Teócrito",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "teofr.": {
+    "descricao": "Teofrasto",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "teógn.": {
+    "descricao": "Teógnis",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "teop.": {
+    "descricao": "Teopompo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "timág.": {
+    "descricao": "Timágenes",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "tim.": {
+    "descricao": "Timóteo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "tirt.": {
+    "descricao": "Tirteu",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "tuc.": {
+    "descricao": "Tucídides",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "var.": {
+    "descricao": "variante",
+    "tipo": "Gramatical"
+  },
+  "xen.": {
+    "descricao": "Xenofonte",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "xenóf.": {
+    "descricao": "Xenófanes",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "zen.": {
+    "descricao": "Zenão",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ac.": {
+    "descricao": "acusativo",
+    "tipo": "Gramatical"
+  },
+  "abs.": {
+    "descricao": "absoluto",
+    "tipo": "Gramatical"
+  },
+  "adj.": {
+    "descricao": "adjetivo",
+    "tipo": "Gramatical"
+  },
+  "adv.": {
+    "descricao": "advérbio",
+    "tipo": "Gramatical"
+  },
+  "ant.": {
+    "descricao": "antigo",
+    "tipo": "Gramatical"
+  },
+  "aram.": {
+    "descricao": "aramaico",
+    "tipo": "Gramatical"
+  },
+  "art.": {
+    "descricao": "artigo",
+    "tipo": "Gramatical"
+  },
+  "assim.": {
+    "descricao": "assimilação",
+    "tipo": "Gramatical"
+  },
+  "át.": {
+    "descricao": "ático",
+    "tipo": "Gramatical"
+  },
+  "aum.": {
+    "descricao": "aumento",
+    "tipo": "Gramatical"
+  },
+  "beóc.": {
+    "descricao": "beócio",
+    "tipo": "Gramatical"
+  },
+  "bíbl.": {
+    "descricao": "bíblico",
+    "tipo": "Cultural"
+  },
+  "card.": {
+    "descricao": "cardinal",
+    "tipo": "Gramatical"
+  },
+  "causat.": {
+    "descricao": "causativo",
+    "tipo": "Gramatical"
+  },
+  "com.": {
+    "descricao": "comédia",
+    "tipo": "Gramatical"
+  },
+  "comp.": {
+    "descricao": "comparativo",
+    "tipo": "Gramatical"
+  },
+  "cond.": {
+    "descricao": "condicional",
+    "tipo": "Gramatical"
+  },
+  "conj.": {
+    "descricao": "conjunção",
+    "tipo": "Gramatical"
+  },
+  "cons.": {
+    "descricao": "consoante",
+    "tipo": "Gramatical"
+  },
+  "contr.": {
+    "descricao": "contração",
+    "tipo": "Gramatical"
+  },
+  "cop.": {
+    "descricao": "copulativo",
+    "tipo": "Gramatical"
+  },
+  "correl.": {
+    "descricao": "correlativo",
+    "tipo": "Gramatical"
+  },
+  "crist.": {
+    "descricao": "João Crisóstomo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "decl.": {
+    "descricao": "declinação",
+    "tipo": "Gramatical"
+  },
+  "desid.": {
+    "descricao": "desiderativo",
+    "tipo": "Gramatical"
+  },
+  "dim.": {
+    "descricao": "diminutivo",
+    "tipo": "Gramatical"
+  },
+  "distrib.": {
+    "descricao": "distributivo",
+    "tipo": "Gramatical"
+  },
+  "dór.": {
+    "descricao": "dórico",
+    "tipo": "Gramatical"
+  },
+  "egíp.": {
+    "descricao": "egípcio",
+    "tipo": "Gramatical"
+  },
+  "enclít.": {
+    "descricao": "enclítico",
+    "tipo": "Gramatical"
+  },
+  "eól.": {
+    "descricao": "eólico",
+    "tipo": "Gramatical"
+  },
+  "ép.": {
+    "descricao": "épico",
+    "tipo": "Gramatical"
+  },
+  "epít.": {
+    "descricao": "epíteto",
+    "tipo": "Gramatical"
+  },
+  "eufem.": {
+    "descricao": "eufemismo",
+    "tipo": "Gramatical"
+  },
+  "exort.": {
+    "descricao": "exortativo",
+    "tipo": "Gramatical"
+  },
+  "expl.": {
+    "descricao": "expletivo",
+    "tipo": "Gramatical"
+  },
+  "expr.": {
+    "descricao": "expressão",
+    "tipo": "Gramatical"
+  },
+  "fam.": {
+    "descricao": "familiar",
+    "tipo": "Gramatical"
+  },
+  "fem.": {
+    "descricao": "feminino",
+    "tipo": "Gramatical"
+  },
+  "fen.": {
+    "descricao": "fenício",
+    "tipo": "Gramatical"
+  },
+  "fig.": {
+    "descricao": "figurado",
+    "tipo": "Gramatical"
+  },
+  "fórm.": {
+    "descricao": "fórmula",
+    "tipo": "Gramatical"
+  },
+  "fríg.": {
+    "descricao": "frígio",
+    "tipo": "Gramatical"
+  },
+  "gen.": {
+    "descricao": "genitivo",
+    "tipo": "Gramatical"
+  },
+  "gr.": {
+    "descricao": "grego",
+    "tipo": "Gramatical"
+  },
+  "gram.": {
+    "descricao": "gramática",
+    "tipo": "Cultural"
+  },
+  "h.": {
+    "descricao": "homem",
+    "tipo": "Gramatical"
+  },
+  "hebr.": {
+    "descricao": "hebraico",
+    "tipo": "Gramatical"
+  },
+  "hum.": {
+    "descricao": "humano",
+    "tipo": "Gramatical"
+  },
+  "imper.": {
+    "descricao": "imperativo",
+    "tipo": "Gramatical"
+  },
+  "impes.": {
+    "descricao": "impessoal",
+    "tipo": "Gramatical"
+  },
+  "impf.": {
+    "descricao": "imperfeito",
+    "tipo": "Gramatical"
+  },
+  "ind.": {
+    "descricao": "indicativo",
+    "tipo": "Gramatical"
+  },
+  "indecl.": {
+    "descricao": "indeclinável",
+    "tipo": "Gramatical"
+  },
+  "indef.": {
+    "descricao": "indefinido",
+    "tipo": "Gramatical"
+  },
+  "indet.": {
+    "descricao": "indeterminado",
+    "tipo": "Gramatical"
+  },
+  "indir.": {
+    "descricao": "indireto",
+    "tipo": "Gramatical"
+  },
+  "inf.": {
+    "descricao": "infinitivo/a",
+    "tipo": "Gramatical"
+  },
+  "instr.": {
+    "descricao": "instrumental",
+    "tipo": "Gramatical"
+  },
+  "intens.": {
+    "descricao": "intensivo",
+    "tipo": "Gramatical"
+  },
+  "interj.": {
+    "descricao": "interjeição",
+    "tipo": "Gramatical"
+  },
+  "intr.": {
+    "descricao": "intransitivo",
+    "tipo": "Gramatical"
+  },
+  "inv.": {
+    "descricao": "invariável",
+    "tipo": "Gramatical"
+  },
+  "iron.": {
+    "descricao": "ironicamente",
+    "tipo": "Gramatical"
+  },
+  "irreg.": {
+    "descricao": "irregular",
+    "tipo": "Gramatical"
+  },
+  "iter.": {
+    "descricao": "iterativo",
+    "tipo": "Gramatical"
+  },
+  "jôn.": {
+    "descricao": "jônico",
+    "tipo": "Gramatical"
+  },
+  "lac.": {
+    "descricao": "lacônio",
+    "tipo": "Gramatical"
+  },
+  "laced.": {
+    "descricao": "lacedemônio",
+    "tipo": "Gramatical"
+  },
+  "lg.": {
+    "descricao": "língua",
+    "tipo": "Gramatical"
+  },
+  "líd.": {
+    "descricao": "lídio",
+    "tipo": "Gramatical"
+  },
+  "lit.": {
+    "descricao": "literalmente",
+    "tipo": "Gramatical"
+  },
+  "loc.": {
+    "descricao": "locução",
+    "tipo": "Gramatical"
+  },
+  "m.": {
+    "descricao": "mulher",
+    "tipo": "Gramatical"
+  },
+  "maced.": {
+    "descricao": "macedônio",
+    "tipo": "Gramatical"
+  },
+  "masc.": {
+    "descricao": "masculino",
+    "tipo": "Gramatical"
+  },
+  "méd.": {
+    "descricao": "médio/a",
+    "tipo": "Gramatical"
+  },
+  "meg.": {
+    "descricao": "megárico",
+    "tipo": "Gramatical"
+  },
+  "meton.": {
+    "descricao": "metonímia",
+    "tipo": "Gramatical"
+  },
+  "neg.": {
+    "descricao": "negação",
+    "tipo": "Gramatical"
+  },
+  "negat.": {
+    "descricao": "negativo",
+    "tipo": "Gramatical"
+  },
+  "nom.": {
+    "descricao": "nominativo",
+    "tipo": "Gramatical"
+  },
+  "num.": {
+    "descricao": "numeral",
+    "tipo": "Gramatical"
+  },
+  "obj.": {
+    "descricao": "objeto",
+    "tipo": "Gramatical"
+  },
+  "onomat.": {
+    "descricao": "onomatopeia",
+    "tipo": "Gramatical"
+  },
+  "opt.": {
+    "descricao": "optativo",
+    "tipo": "Gramatical"
+  },
+  "or.": {
+    "descricao": "oração",
+    "tipo": "Gramatical"
+  },
+  "ord.": {
+    "descricao": "ordinal",
+    "tipo": "Gramatical"
+  },
+  "pal.": {
+    "descricao": "palavra",
+    "tipo": "Gramatical"
+  },
+  "partic.": {
+    "descricao": "particularmente",
+    "tipo": "Gramatical"
+  },
+  "partíc.": {
+    "descricao": "partícula",
+    "tipo": "Gramatical"
+  },
+  "partit.": {
+    "descricao": "partitivo",
+    "tipo": "Gramatical"
+  },
+  "pas.": {
+    "descricao": "passivo",
+    "tipo": "Gramatical"
+  },
+  "pejor.": {
+    "descricao": "pejorativo",
+    "tipo": "Gramatical"
+  },
+  "perf.": {
+    "descricao": "perfeito",
+    "tipo": "Gramatical"
+  },
+  "períf.": {
+    "descricao": "perífrase",
+    "tipo": "Gramatical"
+  },
+  "person.": {
+    "descricao": "personificação",
+    "tipo": "Gramatical"
+  },
+  "pl.": {
+    "descricao": "plural",
+    "tipo": "Gramatical"
+  },
+  "pleon.": {
+    "descricao": "pleonasmo",
+    "tipo": "Gramatical"
+  },
+  "poét.": {
+    "descricao": "poético",
+    "tipo": "Gramatical"
+  },
+  "port.": {
+    "descricao": "português",
+    "tipo": "Gramatical"
+  },
+  "pos.": {
+    "descricao": "possessivo",
+    "tipo": "Gramatical"
+  },
+  "post.": {
+    "descricao": "posteriormente",
+    "tipo": "Gramatical"
+  },
+  "pr.": {
+    "descricao": "próprio",
+    "tipo": "Gramatical"
+  },
+  "pred.": {
+    "descricao": "predicado",
+    "tipo": "Gramatical"
+  },
+  "predic.": {
+    "descricao": "predicativo",
+    "tipo": "Gramatical"
+  },
+  "pref.": {
+    "descricao": "prefixo",
+    "tipo": "Gramatical"
+  },
+  "prep.": {
+    "descricao": "preposição",
+    "tipo": "Gramatical"
+  },
+  "pres.": {
+    "descricao": "presente",
+    "tipo": "Gramatical"
+  },
+  "princ.": {
+    "descricao": "principalmente",
+    "tipo": "Gramatical"
+  },
+  "priv.": {
+    "descricao": "privativo",
+    "tipo": "Gramatical"
+  },
+  "pron.": {
+    "descricao": "pronome",
+    "tipo": "Gramatical"
+  },
+  "protét.": {
+    "descricao": "protético",
+    "tipo": "Gramatical"
+  },
+  "prov.": {
+    "descricao": "provérbio",
+    "tipo": "Gramatical"
+  },
+  "abrev.": {
+    "descricao": "abreviado",
+    "tipo": "Gramatical"
+  },
+  "aprox.": {
+    "descricao": "aproximadamente",
+    "tipo": "Gramatical"
+  },
+  "c.": {
+    "descricao": "cerca de",
+    "tipo": "Gramatical"
+  },
+  "cf.": {
+    "descricao": "confira",
+    "tipo": "Gramatical"
+  },
+  "constr.": {
+    "descricao": "construção",
+    "tipo": "Gramatical"
+  },
+  "corresp.": {
+    "descricao": "correspondente",
+    "tipo": "Gramatical"
+  },
+  "deriv.": {
+    "descricao": "derivado",
+    "tipo": "Gramatical"
+  },
+  "desus.": {
+    "descricao": "desusado",
+    "tipo": "Gramatical"
+  },
+  "duv.": {
+    "descricao": "duvidoso",
+    "tipo": "Gramatical"
+  },
+  "equiv.": {
+    "descricao": "equivalente",
+    "tipo": "Gramatical"
+  },
+  "esp.": {
+    "descricao": "especialmente",
+    "tipo": "Gramatical"
+  },
+  "eufór.": {
+    "descricao": "eufórico",
+    "tipo": "Gramatical"
+  },
+  "exc.": {
+    "descricao": "exceção",
+    "tipo": "Gramatical"
+  },
+  "qquer": {
+    "descricao": "qualquer",
+    "tipo": "Gramatical"
+  },
+  "r.": {
+    "descricao": "raiz",
+    "tipo": "Gramatical"
+  },
+  "rad.": {
+    "descricao": "radical",
+    "tipo": "Gramatical"
+  },
+  "rar.": {
+    "descricao": "raramente",
+    "tipo": "Gramatical"
+  },
+  "rec.": {
+    "descricao": "recente",
+    "tipo": "Gramatical"
+  },
+  "red.": {
+    "descricao": "redobro",
+    "tipo": "Gramatical"
+  },
+  "refl.": {
+    "descricao": "reflexivo",
+    "tipo": "Gramatical"
+  },
+  "reg.": {
+    "descricao": "regular",
+    "tipo": "Gramatical"
+  },
+  "seg.": {
+    "descricao": "seguinte",
+    "tipo": "Gramatical"
+  },
+  "semít.": {
+    "descricao": "semítico",
+    "tipo": "Gramatical"
+  },
+  "sent.": {
+    "descricao": "sentido",
+    "tipo": "Gramatical"
+  },
+  "sigm.": {
+    "descricao": "sigmático",
+    "tipo": "Gramatical"
+  },
+  "sing.": {
+    "descricao": "singular",
+    "tipo": "Gramatical"
+  },
+  "sinc.": {
+    "descricao": "sincopado",
+    "tipo": "Gramatical"
+  },
+  "subent.": {
+    "descricao": "subentendido",
+    "tipo": "Gramatical"
+  },
+  "subj.": {
+    "descricao": "subjuntivo",
+    "tipo": "Gramatical"
+  },
+  "subord.": {
+    "descricao": "subordinada",
+    "tipo": "Gramatical"
+  },
+  "subst.": {
+    "descricao": "substantivo",
+    "tipo": "Gramatical"
+  },
+  "suf.": {
+    "descricao": "sufixo",
+    "tipo": "Gramatical"
+  },
+  "suj.": {
+    "descricao": "sujeito",
+    "tipo": "Gramatical"
+  },
+  "superl.": {
+    "descricao": "superlativo",
+    "tipo": "Gramatical"
+  },
+  "t.": {
+    "descricao": "termo",
+    "tipo": "Gramatical"
+  },
+  "tard.": {
+    "descricao": "tardio",
+    "tipo": "Gramatical"
+  },
+  "temp.": {
+    "descricao": "temporal",
+    "tipo": "Gramatical"
+  },
+  "tr.": {
+    "descricao": "transitivo",
+    "tipo": "Gramatical"
+  },
+  "trag.": {
+    "descricao": "tragédia",
+    "tipo": "Gramatical"
+  },
+  "verb.": {
+    "descricao": "verbal",
+    "tipo": "Gramatical"
+  },
+  "voc.": {
+    "descricao": "vocativo",
+    "tipo": "Gramatical"
+  },
+  "vog.": {
+    "descricao": "vogal",
+    "tipo": "Gramatical"
+  },
+  "anat.": {
+    "descricao": "anatomia",
+    "tipo": "Cultural"
+  },
+  "astrol.": {
+    "descricao": "astrologia",
+    "tipo": "Cultural"
+  },
+  "astron.": {
+    "descricao": "astronomia",
+    "tipo": "Cultural"
+  },
+  "bot.": {
+    "descricao": "botânica",
+    "tipo": "Cultural"
+  },
+  "dram.": {
+    "descricao": "dramaturgia",
+    "tipo": "Cultural"
+  },
+  "filos.": {
+    "descricao": "filosofia",
+    "tipo": "Cultural"
+  },
+  "geom.": {
+    "descricao": "geometria",
+    "tipo": "Cultural"
+  },
+  "geogr.": {
+    "descricao": "geografia",
+    "tipo": "Cultural"
+  },
+  "jur.": {
+    "descricao": "jurídico",
+    "tipo": "Cultural"
+  },
+  "lóg.": {
+    "descricao": "lógica",
+    "tipo": "Cultural"
+  },
+  "matem.": {
+    "descricao": "matemática",
+    "tipo": "Cultural"
+  },
+  "medic.": {
+    "descricao": "medicina",
+    "tipo": "Cultural"
+  },
+  "métr.": {
+    "descricao": "métrica",
+    "tipo": "Cultural"
+  },
+  "mil.": {
+    "descricao": "militar",
+    "tipo": "Cultural"
+  },
+  "mit.": {
+    "descricao": "mitônimo",
+    "tipo": "Cultural"
+  },
+  "mús.": {
+    "descricao": "música",
+    "tipo": "Cultural"
+  },
+  "náut.": {
+    "descricao": "náutica",
+    "tipo": "Cultural"
+  },
+  "polít.": {
+    "descricao": "política",
+    "tipo": "Cultural"
+  },
+  "pros.": {
+    "descricao": "prosódia",
+    "tipo": "Cultural"
+  },
+  "relig.": {
+    "descricao": "religião",
+    "tipo": "Cultural"
+  },
+  "ret.": {
+    "descricao": "retórica",
+    "tipo": "Cultural"
+  },
+  "zool.": {
+    "descricao": "zoologia",
+    "tipo": "Cultural"
+  },
+  "pós-hom.": {
+    "descricao": "pós-homérico",
+    "tipo": "Gramatical"
+  },
+  "sd.": {
+    "descricao": "Léxico Suda",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "excl.": {
+    "descricao": "exclamativo",
+    "tipo": "Gramatical"
+  },
+  "app.": {
+    "descricao": "Appendix nova epigrammatum",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "anton.": {
+    "descricao": "Antonino Liberalis",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "palat.": {
+    "descricao": "Antologia Palatina",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "plan.": {
+    "descricao": "Antologia de Planudes",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "apol.": {
+    "descricao": "Apolônio de Rodes",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "apolôn.": {
+    "descricao": "Apolônio Díscolo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "aql.": {
+    "descricao": "Aquiles Tácio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "cás.": {
+    "descricao": "Dion Cássio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "d.h.": {
+    "descricao": "Dionísio de Halicarnasso",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "dióg.": {
+    "descricao": "Diógenes Laércio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "diod.": {
+    "descricao": "Diodoro da Sicília",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "trác.": {
+    "descricao": "Dionísio Trácio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "aur.": {
+    "descricao": "Marco Aurélio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "q.": {
+    "descricao": "Quinto de Esmirna",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "empír.": {
+    "descricao": "Sexto Empírico",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "simôn.": {
+    "descricao": "Simônides de Amorgos",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "locr.": {
+    "descricao": "Timeu de Locres",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ef.": {
+    "descricao": "de Éfeso",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "platap.": {
+    "descricao": "apócrifos de Platão",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "plutap.": {
+    "descricao": "apócrifos de Plutarco",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "Th.": {
+    "descricao": "Teogonia",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "antrop.": {
+    "descricao": "antropônimo",
+    "tipo": "Cultural"
+  },
+  "top.": {
+    "descricao": "topônimo",
+    "tipo": "Cultural"
+  },
+  "etn.": {
+    "descricao": "etnônimo",
+    "tipo": "Cultural"
+  },
+  "heort.": {
+    "descricao": "heortônimo",
+    "tipo": "Cultural"
+  },
+  "alex.": {
+    "descricao": "Aléxis",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "AC.": {
+    "descricao": "AC",
+    "tipo": "Cultural"
+  },
+  "StByz.": {
+    "descricao": "Estêvão de Bizâncio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "DC.": {
+    "descricao": "DC",
+    "tipo": "Cultural"
+  },
+  "n.": {
+    "descricao": "neutro",
+    "tipo": "Gramatical"
+  },
+  "del.": {
+    "descricao": "Armand Delatte, Anecdota Atheniensia, MSS séc.XVI-XVII Liège 1927",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "del_An.": {
+    "descricao": "Anecdota Atheniensia et alia, ed. A.Delatte. Tome I.II. Liège–Paris 1927.1939 (Index I 657–736).",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "alim.": {
+    "descricao": "alimentar",
+    "tipo": "Cultural"
+  },
+  "seth.": {
+    "descricao": "Simeon Seth, Syntagma de alimentorum facultatibus, ed. B.Langkavel. Leipzig 1868 (Index 142–155). [s.XI]",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ludw_Max.": {
+    "descricao": "Anecdota astrologica, rec. A.Ludwich, Maximi et Ammonis carminum de actionum auspiciis reliquiae. Leipzig 1877, 77–126.",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "gem.": {
+    "descricao": "gemologia",
+    "tipo": "Cultural"
+  },
+  "miner.": {
+    "descricao": "mineral",
+    "tipo": "Cultural"
+  },
+  "VettVal.": {
+    "descricao": "Vécio Valente",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ger.": {
+    "descricao": "geralmente",
+    "tipo": "Gramatical"
+  },
+  "translit.": {
+    "descricao": "transliteração",
+    "tipo": "Gramatical"
+  },
+  "transl.": {
+    "descricao": "transliteração",
+    "tipo": "Cultural"
+  },
+  "trad.": {
+    "descricao": "tradução",
+    "tipo": "Gramatical"
+  },
+  "liter.": {
+    "descricao": "literatura",
+    "tipo": "Cultural"
+  },
+  "lsj": {
+    "descricao": "Greek-English Lexicon (Liddell & Scott)",
+    "tipo": "Gramatical"
+  },
+  "ba.": {
+    "descricao": "Bacantes ou Bacas",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "bábr.": {
+    "descricao": "Bábrio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "vesp.": {
+    "descricao": "As Vespas",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "mitn.": {
+    "descricao": "mitônimo",
+    "tipo": "Gramatical"
+  },
+  "talv.": {
+    "descricao": "talvez",
+    "tipo": "Gramatical"
+  },
+  "tau.": {
+    "descricao": "Gregório Taumaturgo ou Gr. de Neocesareia",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "rel.": {
+    "descricao": "relativo",
+    "tipo": "Gramatical"
+  },
+  "saf.": {
+    "descricao": "Safo",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "dial.": {
+    "descricao": "dialetal",
+    "tipo": "Gramatical"
+  },
+  "lat.": {
+    "descricao": "forma latina",
+    "tipo": "Gramatical"
+  },
+  "patr.": {
+    "descricao": "patronímico",
+    "tipo": "Gramatical"
+  },
+  "Fil.": {
+    "descricao": "Filosofia",
+    "tipo": "Cultural"
+  },
+  "trans.": {
+    "descricao": "transitivo",
+    "tipo": "Gramatical"
+  },
+  "plín.": {
+    "descricao": "Plínio",
+    "tipo": "Nome de Autores e Obras"
+  },
+  "ictiol.": {
+    "descricao": "ictiologia",
+    "tipo": "Cultural"
+  }
+}

@@ -206,9 +206,12 @@ if palavra:
             gid = ent.get("id","?")
             gword = ent.get("gword","")
             pdesc = ent.get("pdesc","")
-            st.markdown(f"**{gword}** (id: {gid})")
-            st.markdown(format_abrevs(pdesc), unsafe_allow_html=True)
 
+            # aplica quebra após ♦
+            pdesc_fmt = pdesc.replace("♦", "♦<br/>")
+
+            st.markdown(f"**{gword}** (id: {gid})")
+            st.markdown(format_abrevs(pdesc_fmt), unsafe_allow_html=True)
 
     elif lemma_candidates:
         st.subheader("📘 Lookup por lema candidato")
@@ -219,16 +222,25 @@ if palavra:
                 entry_id = DDGP_INDEX_LEMAS[cand]
                 ent = DDGP_ENTRY.get(str(entry_id))
                 if ent:
-                    st.markdown(f"**{ent.get('gword','')}** (id: {entry_id})")
-                    st.markdown(format_abrevs(ent.get("pdesc","")), unsafe_allow_html=True)
+                    gword = ent.get("gword", "")
+                    pdesc = ent.get("pdesc", "")
+
+                    # aplica quebra após ♦
+                    pdesc_fmt = pdesc.replace("♦", "♦<br/>")
+
+                    st.markdown(f"**{gword}** (id: {entry_id})")
+                    st.markdown(format_abrevs(pdesc_fmt), unsafe_allow_html=True)
+
                 else:
                     st.warning(f"Lema '{cand}' encontrado no índice (id {entry_id}), mas entrada ausente no JSON ddgp3x_entry.json.")
             else:
                 st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: **{cand}**")
+
         if not matched_any:
             st.warning("Nenhuma entrada do DDGP encontrada para a(s) forma(s) ou lema(s) candidatos.")
     else:
         st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
+
 
 # --- FOOTER (rodapé minimal, versátil e estável) ---
 # Two versions: compact (shown) and long (in expandable)

@@ -46,6 +46,54 @@ if Path("style.css").exists():
 if Path("style_map.css").exists():
     load_css("style_map.css")
 
+# ======= Carregar abreviaturas (abrev.json) =======
+# Procura primeiro no diretório do projeto, depois em /mnt/data (ambiente de desenvolvimento)
+ABREV_PATHS = ["ddgp/data/abrev.json", "ddgp/abrev.json", "abrev.json", "/mnt/data/abrev.json"]
+ABREV = {}
+for p in ABREV_PATHS:
+    try:
+        with open(p, 'r', encoding='utf-8') as f:
+            ABREV = json.load(f)
+            break
+    except FileNotFoundError:
+        continue
+    except Exception:
+        ABREV = {}
+        break
+
+# ======= Função de formatação de abreviaturas =======
+# Implementação simples e robusta que evita substituir partes de palavras:
+import re
+
+def _escape_for_regex(s: str) -> str:
+    return re.escape(s)
+
+# Ordena por comprimento decrescente para evitar colisões (e.g., 'pl.' vs 'plín.')
+_abbrev_list_sorted = sorted(list(ABREV.keys()), key=lambda x: -len(x))
+_abbrev_patterns = [r"(?<!\w)" + _escape_for_regex(a) + r"(?!\w)" for a in _abbrev_list_sorted]
+
+if _abbrev_patterns:
+    ABREV_REGEX = re.compile(r"(" + r"|".join(_abbrev_patterns) + r")")
+else:
+    ABREV_REGEX = None
+
+def format_abrevs(texto: str) -> str:
+    """Substitui abreviaturas por spans com classes e tooltip. Usar apenas no dicionário."""
+    if not texto or not ABREV_REGEX:
+        return texto
+
+    def _repl(m):
+        ab = m.group(0)
+        info = ABREV.get(ab, {})
+        desc = info.get("descricao", "")
+        tipo = info.get("tipo", "")
+        # decide classe: autores/obras/culturais -> small-caps; otherwise itálico/azul
+        cls = "abrev-author" if ("Autor" in tipo or "Obras" in tipo or "Nome" in tipo or "Cultural" in tipo) else "abrev"
+        # escapar aspas no title (por segurança HTML)
+        title = desc.replace('"', '&quot;')
+        return f'<span class="{cls}" title="{title}">{ab}</span>'
+
+    return ABREV_REGEX.sub(_repl, texto)
 
 
 # helper utils

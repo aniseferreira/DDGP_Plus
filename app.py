@@ -47,7 +47,6 @@ if Path("style_map.css").exists():
     load_css("style_map.css")
 
 # ======= Carregar abreviaturas (abrev.json) =======
-# Procura primeiro no diretório do projeto, depois em /mnt/data (ambiente de desenvolvimento)
 ABREV_PATHS = ["ddgp/data/abrev.json", "ddgp/abrev.json", "abrev.json", "/mnt/data/abrev.json"]
 ABREV = {}
 for p in ABREV_PATHS:
@@ -62,15 +61,13 @@ for p in ABREV_PATHS:
         break
 
 # ======= Função de formatação de abreviaturas =======
-# Implementação simples e robusta que evita substituir partes de palavras:
 import re
 
 def _escape_for_regex(s: str) -> str:
     return re.escape(s)
 
-# Ordena por comprimento decrescente para evitar colisões (e.g., 'pl.' vs 'plín.')
 _abbrev_list_sorted = sorted(list(ABREV.keys()), key=lambda x: -len(x))
-_abbrev_patterns = [r"(?<!\w)" + _escape_for_regex(a) + r"(?!\w)" for a in _abbrev_list_sorted]
+_abbrev_patterns = [r"(?<!\\w)" + _escape_for_regex(a) + r"(?!\\w)" for a in _abbrev_list_sorted]
 
 if _abbrev_patterns:
     ABREV_REGEX = re.compile(r"(" + r"|".join(_abbrev_patterns) + r")")
@@ -78,7 +75,6 @@ else:
     ABREV_REGEX = None
 
 def format_abrevs(texto: str) -> str:
-    """Substitui abreviaturas por spans com classes e tooltip. Usar apenas no dicionário."""
     if not texto or not ABREV_REGEX:
         return texto
 
@@ -87,9 +83,7 @@ def format_abrevs(texto: str) -> str:
         info = ABREV.get(ab, {})
         desc = info.get("descricao", "")
         tipo = info.get("tipo", "")
-        # decide classe: autores/obras/culturais -> small-caps; otherwise itálico/azul
         cls = "abrev-author" if ("Autor" in tipo or "Obras" in tipo or "Nome" in tipo or "Cultural" in tipo) else "abrev"
-        # escapar aspas no title (por segurança HTML)
         title = desc.replace('"', '&quot;')
         return f'<span class="{cls}" title="{title}">{ab}</span>'
 
@@ -104,7 +98,6 @@ def simplify(text):
     s = normalize(text)
     return "".join(ch for ch in unicodedata.normalize("NFD", s) if not unicodedata.combining(ch)).lower()
 
-# safe json loader
 def load_json_safe(path):
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -115,7 +108,6 @@ def load_json_safe(path):
         st.warning(f"Erro ao ler JSON {os.path.basename(path)}: {e}")
         return None
 
-# try to import morph_simple (placed in ddgp/morph_simple.py)
 MORPH_AVAILABLE = False
 try:
     from ddgp.morph_simple import morph_analyze_simple
@@ -124,7 +116,6 @@ except Exception as e:
     morph_analyze_simple = None
     st.warning("morph_simple não pôde ser importado — a análise morfológica ficará indisponível. Erro: " + str(e))
 
-# Load DDGP JSONs (if present)
 BASE_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
 
@@ -133,7 +124,7 @@ DDGP_INDEX_LEMAS = load_json_safe(os.path.join(DATA_DIR, "ddgp_index_lemas.json"
 DDGP_INDEX_FORMAS = load_json_safe(os.path.join(DATA_DIR, "ddgp_index_formas_final.json")) or {}
 DDGP_FORMA_TO_LEMA = load_json_safe(os.path.join(DATA_DIR, "ddgp_forma_to_lema.json")) or {}
 
-# --- HEADER with logo on the left ---
+# --- HEADER ---
 col_left, col_title = st.columns([1, 10])
 with col_left:
     try:
@@ -142,7 +133,6 @@ with col_left:
         else:
             st.image(LOGO_URL, width=64)
     except Exception:
-        # fallback: show nothing (não quebrar)
         st.text("")
 
 with col_title:
@@ -158,23 +148,19 @@ palavra = st.text_input("Forma grega politônica ou sem diacríticos", value="")
 if palavra:
     st.subheader("🧩 Resultado")
 
-    # 1) Try exact form lookup in ddgp_index_formas (fast path)
     simp_form = simplify(palavra)
     found_entries = []
     if DDGP_INDEX_FORMAS and simp_form in DDGP_INDEX_FORMAS:
         ids = DDGP_INDEX_FORMAS[simp_form]
-        # collect first up to 10 entries
         for i in ids[:10]:
             ent = DDGP_ENTRY.get(str(i))
             if ent:
                 found_entries.append(ent)
 
-    # 2) Try forma->lema index fallback
     lema_from_form = None
     if not found_entries and DDGP_FORMA_TO_LEMA and simp_form in DDGP_FORMA_TO_LEMA:
         lema_from_form = DDGP_FORMA_TO_LEMA[simp_form]
 
-    # 3) If morph available, analyze and try to get lemma
     morph_result = None
     if MORPH_AVAILABLE:
         try:
@@ -183,33 +169,26 @@ if palavra:
             st.error(f"Erro na análise morfológica: {e}")
             morph_result = None
 
-    # Show morph result
     if morph_result:
         st.markdown("**Análise morfológica (simples)**")
         st.json(morph_result)
     else:
         st.info("Análise morfológica não disponível.")
 
-    # If we have a lemma candidate from morph or from forma_to_lema, try to lookup dictionary
     lemma_candidates = []
     if morph_result and morph_result.get("lema"):
         lemma_candidates.append(simplify(morph_result.get("lema")))
     if lema_from_form:
         lemma_candidates.append(simplify(lema_from_form))
-    # remove duplicates keeping order
     seen = set(); lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 
-    # If dictionary entries were found by exact form, show them first
     if found_entries:
         st.subheader("📘 Entradas do DDGP (lookup por forma)")
         for ent in found_entries:
             gid = ent.get("id","?")
             gword = ent.get("gword","")
             pdesc = ent.get("pdesc","")
-
-            # aplica quebra após ♦
             pdesc_fmt = pdesc.replace("♦", "♦<br/>")
-
             st.markdown(f"**{gword}** (id: {gid})")
             st.markdown(format_abrevs(pdesc_fmt), unsafe_allow_html=True)
 
@@ -220,7 +199,8 @@ if palavra:
             if cand in DDGP_INDEX_LEMAS:
                 matched_any = True
                 entry_id = DDGP_INDEX_LEMAS[cand]
-                ent = DDGP_ENTRY.get(str(entry_id))
+                ent = DDGP_ENTRY.get(str(entry
+
                 if ent:
                     gword = ent.get("gword", "")
                     pdesc = ent.get("pdesc", "")

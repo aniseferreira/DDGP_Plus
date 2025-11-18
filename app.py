@@ -152,9 +152,9 @@ footer_short = """
 **DDGP Plus** — Analisador Morfológico e Dicionário Digital de Grego–Português.  
 Versão 2025. Disponível em: https://ddgp-plus.streamlit.app  
 Baseado no Dicionário Digital de Grego-Português (DDGP e DGP).
-Projeto Letras Clássicas Digitais FCLAr/UNESP
-Resp. Anise Ferreira
+Projeto Letras Clássicas Digitais FCLAr/UNESP. Resp. Anise Ferreira
 Licenciado sob **CC BY–NC–ND 4.0**.
+
 """
 
 footer_long = """
@@ -163,7 +163,7 @@ footer_long = """
 - Base: Dicionário Digital de Grego–Português (DDGP e DGP), Projeto Letras Clássicas Digitais — FCLAr/UNESP.  
 - Responsável: Anise D'Orange Ferreira.
 - Licença do conteúdo digital: CC BY–NC–ND 4.0.  
-- Créditos aos autores da versão impressa do DGP, coordenadores e instituições conforme rodapé em hipatia.fclar.unesp.br.  
+- Créditos aos autores da versão impressa do DGP, coordenadores e instituições conforme rodapé em http://hipatia.fclar.unesp.br.  
 - Desenvolvimento do front-end e integração: equipe de desenvolvimento (registro técnico disponível sob solicitação).
 
 """

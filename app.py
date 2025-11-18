@@ -207,7 +207,9 @@ if palavra:
             gword = ent.get("gword","")
             pdesc = ent.get("pdesc","")
             st.markdown(f"**{gword}** (id: {gid})")
-            st.write(pdesc)
+            st.markdown(format_abrevs(pdesc), unsafe_allow_html=True)
+
+
     elif lemma_candidates:
         st.subheader("📘 Lookup por lema candidato")
         matched_any = False
@@ -218,7 +220,7 @@ if palavra:
                 ent = DDGP_ENTRY.get(str(entry_id))
                 if ent:
                     st.markdown(f"**{ent.get('gword','')}** (id: {entry_id})")
-                    st.write(ent.get("pdesc",""))
+                    st.markdown(format_abrevs(ent.get("pdesc","")), unsafe_allow_html=True)
                 else:
                     st.warning(f"Lema '{cand}' encontrado no índice (id {entry_id}), mas entrada ausente no JSON ddgp3x_entry.json.")
             else:

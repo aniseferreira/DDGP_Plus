@@ -25,6 +25,8 @@ html, body, textarea, input, button {
     color: #1a4d8f;
 }
 
+.abrev, .abrev-author { cursor: help; }
+
 /* Exemplos em grego — não itálico */
 .exemplo-gr {
     font-style: normal !important;

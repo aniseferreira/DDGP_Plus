@@ -88,7 +88,8 @@ def format_abrevs(texto: str) -> str:
         desc = info.get("descricao", "")
         tipo = info.get("tipo", "")
         # decide classe: autores/obras/culturais -> small-caps; otherwise itálico/azul
-        cls = "abrev-author" if ("Autor" in tipo or "Obras" in tipo or "Nome" in tipo or "Cultural" in tipo) else "abrev"
+        # autores / obras / nomes próprios / cultural = small caps
+        cls = "autor-sc" if ("Autor" in tipo or "Obras" in tipo or "Nome" in tipo or "Cultural" in tipo) else "abrev"
         # escapar aspas no title (por segurança HTML)
         title = desc.replace('"', '&quot;')
         return f'<span class="{cls}" title="{title}">{ab}</span>'

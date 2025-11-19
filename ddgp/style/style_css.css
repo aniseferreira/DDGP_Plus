@@ -51,3 +51,23 @@ html, body, textarea, input, button {
     color: #666;
     margin-top: 20px;
 }
+
+/* Abreviaturas gramaticais */
+.abrev {
+    font-style: italic;
+    color: #0066cc;
+}
+
+/* Abreviaturas de autores/obras (small caps) */
+.autor-sc {
+    font-variant: small-caps;
+    letter-spacing: 0.5px;
+}
+
+/* Seções do dicionário (♦ ativa, ♦ média, ♦ passiva) */
+.ddgp-sec {
+    font-weight: 600;
+    margin-top: 0.8em;
+    margin-bottom: 0.3em;
+    font-size: 1.05em;
+}

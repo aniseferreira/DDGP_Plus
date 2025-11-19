@@ -247,20 +247,18 @@ if palavra:
         matched_any = False
         for cand in lemma_candidates:
             if cand in DDGP_INDEX_LEMAS:
-                matched_any = True
-                entry_id = DDGP_INDEX_LEMAS[cand]
-                ent = DDGP_ENTRY.get(str(entry_id))
+            matched_any = True
+            entry_id = DDGP_INDEX_LEMAS[cand]
+            ent = DDGP_ENTRY.get(str(entry_id))
                 if ent:
                     gword = ent.get("gword", "")
                     pdesc = ent.get("pdesc", "")
 
-                    # aplica quebra após ♦
+                    st.markdown(f"**{gword}** (id: {entry_id})")
+
                     pdesc_fmt = format_pdesc(pdesc)
                     st.markdown(pdesc_fmt, unsafe_allow_html=True)
 
-
-                    st.markdown(f"**{gword}** (id: {entry_id})")
-                    st.markdown(format_abrevs(pdesc_fmt), unsafe_allow_html=True)
 
                 else:
                     st.warning(f"Lema '{cand}' encontrado no índice (id {entry_id}), mas entrada ausente no JSON ddgp3x_entry.json.")

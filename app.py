@@ -247,9 +247,9 @@ if palavra:
         matched_any = False
         for cand in lemma_candidates:
             if cand in DDGP_INDEX_LEMAS:
-            matched_any = True
-            entry_id = DDGP_INDEX_LEMAS[cand]
-            ent = DDGP_ENTRY.get(str(entry_id))
+                matched_any = True
+                entry_id = DDGP_INDEX_LEMAS[cand]
+                ent = DDGP_ENTRY.get(str(entry_id))
                 if ent:
                     gword = ent.get("gword", "")
                     pdesc = ent.get("pdesc", "")

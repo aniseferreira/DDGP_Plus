@@ -210,20 +210,7 @@ def format_pdesc(pdesc: str) -> str:
 
     return "\n".join(out_fragments)
     
-    def _repl(m):
-        ab = m.group(0)
-        info = ABREV.get(ab, {})
-        desc = info.get("descricao", "")
-        tipo = info.get("tipo", "")
-        # decide classe: autores/obras/culturais -> small-caps; otherwise itálico/azul
-        # autores / obras / nomes próprios / cultural = small caps
-        cls = "autor-sc" if ("Autor" in tipo or "Obras" in tipo or "Nome" in tipo or "Cultural" in tipo) else "abrev"
-        # escapar aspas no title (por segurança HTML)
-        title = desc.replace('"', '&quot;')
-        return f'<span class="{cls}" title="{title}">{ab}</span>'
-
-    return ABREV_REGEX.sub(_repl, texto)
-
+   
 
 # helper utils
 def normalize(text):

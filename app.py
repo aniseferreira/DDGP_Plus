@@ -46,6 +46,45 @@ if Path("style.css").exists():
 if Path("style_map.css").exists():
     load_css("style_map.css")
 
+# --- Inline fallback CSS (garante estilos mesmo se style.css falhar) ---
+_inline_css = """
+<style>
+/* Abreviaturas gramaticais */
+.abrev {
+    font-style: italic;
+    color: #0066cc;
+    cursor: help;
+}
+
+/* Abreviaturas de autores/obras (small caps) */
+.autor-sc {
+    font-variant: small-caps;
+    letter-spacing: 0.4px;
+    cursor: help;
+}
+
+/* Seções do dicionário (♦ ativa, ♦ média, ♦ passiva) */
+.ddgp-sec {
+    font-weight: 600;
+    margin-top: 0.8em;
+    margin-bottom: 0.0em;
+    font-size: 1.02em;
+}
+
+/* Parágrafo de sentido/definição logo após o marcador */
+.ddgp-mean {
+    margin-top: 0.2em;
+    margin-bottom: 0.6em;
+}
+
+/* Garante que spans com title mostrem pointer e não sejam afetados por reset CSS */
+.abrev, .autor-sc { text-decoration: none; }
+.abrev[title], .autor-sc[title] { position: relative; }
+</style>
+"""
+st.markdown(_inline_css, unsafe_allow_html=True)
+
+
 # ======= Carregar abreviaturas (abrev.json) =======
 # Procura primeiro no diretório do projeto, depois em /mnt/data (ambiente de desenvolvimento)
 ABREV_PATHS = ["ddgp/data/abrev.json", "ddgp/abrev.json", "abrev.json", "/mnt/data/abrev.json"]
@@ -97,18 +136,79 @@ def format_abrevs(texto: str) -> str:
     return ABREV_REGEX.sub(_repl, texto)
 
 
+import re
+
 def format_pdesc(pdesc: str) -> str:
+    """
+    Transforma o pdesc para:
+      <p class='ddgp-sec'>♦ ativa</p>
+      <p class='ddgp-mean'>...texto da ativa...</p>
+    e aplica format_abrevs() ao conteúdo.
+    """
+
     if not pdesc:
         return ""
 
-    # Colocar ♦ em bloco separado
-    pdesc = pdesc.replace("♦", "<p class='ddgp-sec'>♦</p>")
+    text = pdesc.strip()
 
-    # Aplicar abreviaturas estilizadas
-    pdesc = format_abrevs(pdesc)
+    # Normaliza espaços em branco
+    text = re.sub(r"\s+", " ", text)
 
-    return pdesc
+    # Padrão para encontrar os marcadores ♦ com rótulos (ativa|média|passiva)
+    # Captura '♦' + espaço opcional + rótulo + resto até próximo '♦' (lookahead)
+    pattern = re.compile(r"♦\s*(ativa|m[eé]dia|passiva)\s*(?=(?:.*?♦)|$)", re.IGNORECASE)
 
+    # Se não encontrar marcadores bem formados, só aplica abreviaturas e devolve
+    if not pattern.search(text):
+        # aplicar abreviaturas ao texto inteiro
+        return format_abrevs(text)
+
+    parts = []
+    # vamos percorrer ocorrências e pegar fatias
+    last_idx = 0
+    for m in pattern.finditer(text):
+        start = m.start()
+        # texto antes do marcador (pode conter prefixo, ex.: paradigmas)
+        if start > last_idx:
+            before = text[last_idx:start].strip()
+            if before:
+                parts.append(("body", before))
+        label = m.group(1).strip()
+        # a seção começa no m.end(); precisamos até o próximo marcador ou fim
+        # procurar próxima ocorrência a partir de m.end()
+        next_m = pattern.search(text, m.end())
+        if next_m:
+            section_text = text[m.end():next_m.start()].strip()
+            last_idx = next_m.start()
+        else:
+            section_text = text[m.end():].strip()
+            last_idx = len(text)
+        # adiciona marcador + conteúdo
+        parts.append(("marker", "♦ " + label))
+        parts.append(("mean", section_text))
+
+    # Caso reste texto após o último marcador
+    if last_idx < len(text):
+        tail = text[last_idx:].strip()
+        if tail:
+            parts.append(("tail", tail))
+
+    # Construir HTML final
+    out_fragments = []
+    for kind, val in parts:
+        if kind == "body":
+            # corpo antes de marcadores (por exemplo, paradigma), aplicar abrevs e manter
+            out_fragments.append(f"<p>{format_abrevs(val)}</p>")
+        elif kind == "marker":
+            # marcador numa linha com label
+            out_fragments.append(f"<p class='ddgp-sec'>{val}</p>")
+        elif kind == "mean":
+            # parágrafo de sentido
+            out_fragments.append(f"<p class='ddgp-mean'>{format_abrevs(val)}</p>")
+        elif kind == "tail":
+            out_fragments.append(f"<p>{format_abrevs(val)}</p>")
+
+    return "\n".join(out_fragments)
     
     def _repl(m):
         ab = m.group(0)

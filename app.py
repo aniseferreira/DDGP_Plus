@@ -82,6 +82,18 @@ def format_abrevs(texto: str) -> str:
     if not texto or not ABREV_REGEX:
         return texto
 
+def format_pdesc(pdesc):
+    if not pdesc:
+        return ""
+
+    # Colocar ♦ em bloco separado
+    pdesc = pdesc.replace("♦", "<p class='ddgp-sec'>♦</p>")
+    
+    # Aplicar abreviaturas estilizadas
+    pdesc = format_abrevs(pdesc)
+
+    return pdesc
+    
     def _repl(m):
         ab = m.group(0)
         info = ABREV.get(ab, {})
@@ -209,7 +221,9 @@ if palavra:
             pdesc = ent.get("pdesc","")
 
             # aplica quebra após ♦
-            pdesc_fmt = pdesc.replace("♦", "♦<br/>")
+            pdesc_fmt = format_pdesc(pdesc)
+        st.markdown(pdesc_fmt, unsafe_allow_html=True)
+
 
             st.markdown(f"**{gword}** (id: {gid})")
             st.markdown(format_abrevs(pdesc_fmt), unsafe_allow_html=True)
@@ -227,7 +241,9 @@ if palavra:
                     pdesc = ent.get("pdesc", "")
 
                     # aplica quebra após ♦
-                    pdesc_fmt = pdesc.replace("♦", "♦<br/>")
+                    pdesc_fmt = format_pdesc(pdesc)
+                    st.markdown(pdesc_fmt, unsafe_allow_html=True)
+
 
                     st.markdown(f"**{gword}** (id: {entry_id})")
                     st.markdown(format_abrevs(pdesc_fmt), unsafe_allow_html=True)

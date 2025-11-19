@@ -237,10 +237,10 @@ if palavra:
             pdesc = ent.get("pdesc","")
 
             # aplica quebra após ♦
-           st.markdown(f"**{gword}** (id: {gid})")
+            st.markdown(f"**{gword}** (id: {gid})")
 
-           pdesc_fmt = format_pdesc(pdesc)
-           st.markdown(pdesc_fmt, unsafe_allow_html=True)
+            pdesc_fmt = format_pdesc(pdesc)
+            st.markdown(pdesc_fmt, unsafe_allow_html=True)
 
     elif lemma_candidates:
         st.subheader("📘 Lookup por lema candidato")

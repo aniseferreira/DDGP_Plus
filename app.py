@@ -225,8 +225,8 @@ if palavra:
         st.markdown(pdesc_fmt, unsafe_allow_html=True)
 
 
-            st.markdown(f"**{gword}** (id: {gid})")
-            st.markdown(format_abrevs(pdesc_fmt), unsafe_allow_html=True)
+        st.markdown(f"**{gword}** (id: {gid})")
+        st.markdown(format_abrevs(pdesc_fmt), unsafe_allow_html=True)
 
     elif lemma_candidates:
         st.subheader("📘 Lookup por lema candidato")

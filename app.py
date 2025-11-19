@@ -82,17 +82,33 @@ def format_abrevs(texto: str) -> str:
     if not texto or not ABREV_REGEX:
         return texto
 
-def format_pdesc(pdesc):
+    def _repl(m):
+        ab = m.group(0)
+        info = ABREV.get(ab, {})
+        desc = info.get("descricao", "")
+        tipo = info.get("tipo", "")
+
+        # autores/obras/culturais = small caps
+        cls = "autor-sc" if ("Autor" in tipo or "Obras" in tipo or "Nome" in tipo or "Cultural" in tipo) else "abrev"
+
+        title = desc.replace('"', '&quot;')
+        return f'<span class="{cls}" title="{title}">{ab}</span>'
+
+    return ABREV_REGEX.sub(_repl, texto)
+
+
+def format_pdesc(pdesc: str) -> str:
     if not pdesc:
         return ""
 
     # Colocar ♦ em bloco separado
     pdesc = pdesc.replace("♦", "<p class='ddgp-sec'>♦</p>")
-    
+
     # Aplicar abreviaturas estilizadas
     pdesc = format_abrevs(pdesc)
 
     return pdesc
+
     
     def _repl(m):
         ab = m.group(0)

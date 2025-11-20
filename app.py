@@ -385,36 +385,36 @@ if palavra:
             pdesc_fmt = format_pdesc(pdesc)
             st.write(pdesc_fmt, unsafe_allow_html=True)
 
-   elif lemma_candidates:
-    st.subheader("📘 Lookup por lema candidato")
+    elif lemma_candidates:
+        st.subheader("📘 Lookup por lema candidato")
 
-    matched_any = False
-    for cand in lemma_candidates:
+            matched_any = False
+            for cand in lemma_candidates:
 
-        # usa a função nova
-        entry_ids = find_entry_ids_for_lemma_candidate(cand)
+                # usa a função nova
+                entry_ids = find_entry_ids_for_lemma_candidate(cand)
 
-        if not entry_ids:
-            st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: **{cand}**")
-            continue
+                if not entry_ids:
+                    st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: **{cand}**")
+                    continue
 
-        matched_any = True
+                matched_any = True
 
-        # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
-        for entry_id in entry_ids:
-            ent = DDGP_ENTRY.get(str(entry_id))
-            if ent:
-                gword = ent.get("gword", "")
-                pdesc = ent.get("pdesc", "")
-                pdesc_fmt = format_pdesc(pdesc)
+                # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
+                for entry_id in entry_ids:
+                    ent = DDGP_ENTRY.get(str(entry_id))
+                    if ent:
+                        gword = ent.get("gword", "")
+                        pdesc = ent.get("pdesc", "")
+                        pdesc_fmt = format_pdesc(pdesc)
 
-                st.markdown(f"**{gword}** (id: {entry_id})")
-                st.markdown(pdesc_fmt, unsafe_allow_html=True)
-            else:
-                st.warning(f"Entrada {entry_id} ausente no JSON.")
+                        st.markdown(f"**{gword}** (id: {entry_id})")
+                        st.markdown(pdesc_fmt, unsafe_allow_html=True)
+                    else:
+                        st.warning(f"Entrada {entry_id} ausente no JSON.")
     
-    if not matched_any:
-        st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
+            if not matched_any:
+                st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
 
 
 # --- FOOTER (rodapé minimal, versátil e estável) ---

@@ -403,7 +403,7 @@ if found_entries:
             pdesc_fmt = format_pdesc(pdesc)
             st.write(pdesc_fmt, unsafe_allow_html=True)
 
-    elif lemma_candidates:
+elif lemma_candidates:
         st.subheader("📘 Lookup por lema candidato")
 
         matched_any = False

@@ -59,11 +59,15 @@ html, body, textarea, input, button {
     color: #0066cc; !important;
 }
 
-/* Abreviaturas de autores/obras em small caps + azul */
-.autor-sc {
+p .autor-sc,
+span.autor-sc,
+div .autor-sc,
+.stMarkdown .autor-sc,
+html body .autor-sc {
     font-variant: small-caps;
-    color: #0066cc; !important;
+    color: #1a4d8f !important;
 }
+
 span.autor-sc {
     color: #0066cc !important;
 }

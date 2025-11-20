@@ -389,7 +389,7 @@ if palavra:
         st.subheader("📘 Lookup por lema candidato")
 
         matched_any = False
-            for cand in lemma_candidates:
+        for cand in lemma_candidates:
 
                 # usa a função nova
                 entry_ids = find_entry_ids_for_lemma_candidate(cand)

@@ -36,6 +36,7 @@ html, body, textarea, input, button {
 .autor-sc {
     font-variant: small-caps;
     font-size: 0.9em;
+    color: #0066cc;
 }
 
 /* Etimologia dentro de 〈…〉 */

@@ -231,6 +231,49 @@ def simplify(text):
 
     return s
 
+def find_entry_ids_for_lemma_candidate(cand: str):
+    """
+    Dado um candidato de lema (em grego, poss. com/sem dígito),
+    devolve ids de entradas correspondentes no DDGP:
+      - busca direta
+      - busca por normalização Unicode
+      - busca por prefixo (captura lemas numerados λέγω1, λέγω2 etc.)
+    """
+    if not cand:
+        return []
+
+    base = simplify(cand)  # já remove diacríticos e dígitos
+
+    results = []
+    seen = set()
+
+    # 1 — tentativa direta
+    if base in DDGP_INDEX_LEMAS:
+        eid = DDGP_INDEX_LEMAS[base]
+        results.append(eid)
+        seen.add(eid)
+
+    # 2 — normalizações Unicode
+    for variant in (unicodedata.normalize("NFC", base),
+                    unicodedata.normalize("NFD", base)):
+        if variant in DDGP_INDEX_LEMAS:
+            eid = DDGP_INDEX_LEMAS[variant]
+            if eid not in seen:
+                results.append(eid); seen.add(eid)
+
+    # 3 — fallback: buscar todos que começam com o lema simplificado
+    for k, eid in DDGP_INDEX_LEMAS.items():
+        # normalizar chave
+        k_simp = "".join(
+            ch for ch in unicodedata.normalize("NFD", k)
+            if not unicodedata.combining(ch)
+        ).lower()
+        k_simp = "".join(ch for ch in k_simp if not ch.isdigit())
+
+        if k_simp.startswith(base) and eid not in seen:
+            results.append(eid); seen.add(eid)
+
+    return results
 
 # safe json loader
 def load_json_safe(path):

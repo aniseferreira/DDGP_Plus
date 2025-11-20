@@ -341,7 +341,7 @@ if palavra:
             if ent:
                 found_entries.append(ent)
 
-    # 2) Try forma->lema index fallback
+        # 2) Try forma->lema index fallback
     lema_from_form = None
     if not found_entries and DDGP_FORMA_TO_LEMA and simp_form in DDGP_FORMA_TO_LEMA:
         lema_from_form = DDGP_FORMA_TO_LEMA[simp_form]
@@ -365,58 +365,49 @@ if palavra:
     # If we have a lemma candidate from morph or from forma_to_lema, try to lookup dictionary
     lemma_candidates = []
 
-# 1) lema vindo da morfologia (se válido)
-if morph_result and morph_result.get("lema"):
-    lm = simplify(morph_result.get("lema"))
-    if lm and lm != simplify(palavra):
-        lemma_candidates.append(lm)
+    # 1) lema vindo da morfologia (se válido)
+    if morph_result and morph_result.get("lema"):
+        lm = simplify(morph_result.get("lema"))
+        if lm and lm != simplify(palavra):
+            lemma_candidates.append(lm)
 
-# 2) lema vindo do índice forma→lema (muito importante!)
-if lema_from_form:
-    lemma_candidates.append(simplify(lema_from_form))
+    # 2) lema vindo do índice forma→lema
+    if lema_from_form:
+        lemma_candidates.append(simplify(lema_from_form))
 
-# 3) fallback: tentar simplificar a forma para tentar achar o lema numerado
-#    exemplo: λεγουσιν → λεγω → retorna λέγω1/λέγω2
-form_base = simplify(palavra)
-# remove sufixos verbais comuns como '-ουσιν'
-if form_base.endswith("ουσιν"):
-    lemma_candidates.append(form_base[:-5])  # λεγω
+    # 3) fallback: tentar derivar lema removendo terminação verbal
+    form_base = simplify(palavra)
+    if form_base.endswith("ουσιν"):
+        lemma_candidates.append(form_base[:-5])  # λεγω
 
-# Deduplicar
-seen = set()
-lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
-
-# remove duplicates keeping order
-seen = set(); lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
+    # Deduplicar
+    seen = set()
+    lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 
     # If dictionary entries were found by exact form, show them first
-if found_entries:
+    if found_entries:
         st.subheader("📘 Entradas do DDGP (lookup por forma)")
         for ent in found_entries:
-            gid = ent.get("id","?")
-            gword = ent.get("gword","")
-            pdesc = ent.get("pdesc","")
+            gid = ent.get("id", "?")
+            gword = ent.get("gword", "")
+            pdesc = ent.get("pdesc", "")
 
-            # aplica quebra após ♦
             st.markdown(f"**{gword}** (id: {gid})")
 
             pdesc_fmt = format_pdesc(pdesc)
             st.write(pdesc_fmt, unsafe_allow_html=True)
 
-elif lemma_candidates:
+    elif lemma_candidates:
         st.subheader("📘 Lookup por lema candidato")
 
         matched_any = False
         for cand in lemma_candidates:
 
-                # usa a função nova
-                entry_ids = find_entry_ids_for_lemma_candidate(cand)
+            # usa a função nova
+            entry_ids = find_entry_ids_for_lemma_candidate(cand)
 
-                if not entry_ids:
-                    st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: **{cand}**")
-                    continue
-
-                matched_any = True
+            if not entry_ids:
+                st.info(f"Nenhum
 
                 # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
                 for entry_id in entry_ids:

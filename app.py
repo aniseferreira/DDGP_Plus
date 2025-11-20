@@ -390,7 +390,7 @@ lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x)
 seen = set(); lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 
     # If dictionary entries were found by exact form, show them first
-    if found_entries:
+if found_entries:
         st.subheader("📘 Entradas do DDGP (lookup por forma)")
         for ent in found_entries:
             gid = ent.get("id","?")

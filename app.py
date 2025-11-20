@@ -401,12 +401,13 @@ elif lemma_candidates:
     st.subheader("📘 Lookup por lema candidato")
 
     matched_any = False
+
     for cand in lemma_candidates:
 
         # usa a função nova
         entry_ids = find_entry_ids_for_lemma_candidate(cand)
 
-        # se não encontrou nada p/ esse candidato
+        # se não encontrou nada p/ esse candidato → passa pro próximo
         if not entry_ids:
             st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: {cand}")
             continue
@@ -423,11 +424,13 @@ elif lemma_candidates:
 
                 st.markdown(f"**{gword}** (id: {entry_id})")
                 st.markdown(pdesc_fmt, unsafe_allow_html=True)
+
             else:
                 st.warning(f"Entrada {entry_id} ausente no JSON.")
 
     if not matched_any:
         st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
+
 
 
 # --- FOOTER (rodapé minimal, versátil e estável) ---

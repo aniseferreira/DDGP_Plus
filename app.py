@@ -218,7 +218,19 @@ def normalize(text):
 
 def simplify(text):
     s = normalize(text)
-    return "".join(ch for ch in unicodedata.normalize("NFD", s) if not unicodedata.combining(ch)).lower()
+    s = "".join(ch for ch in unicodedata.normalize("NFD", s)
+                if not unicodedata.combining(ch))
+    s = s.lower()
+
+    # remover dígitos
+    s = "".join(ch for ch in s if not ch.isdigit())
+
+    # opcional: remover ponto, traço, barra
+    for ch in [".", "-", "/", " "]:
+        s = s.replace(ch, "")
+
+    return s
+
 
 # safe json loader
 def load_json_safe(path):

@@ -388,7 +388,7 @@ if palavra:
     elif lemma_candidates:
         st.subheader("📘 Lookup por lema candidato")
 
-            matched_any = False
+        matched_any = False
             for cand in lemma_candidates:
 
                 # usa a função nova

@@ -386,8 +386,8 @@ if form_base.endswith("ουσιν"):
 seen = set()
 lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 
-    # remove duplicates keeping order
-    seen = set(); lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
+# remove duplicates keeping order
+seen = set(); lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 
     # If dictionary entries were found by exact form, show them first
     if found_entries:

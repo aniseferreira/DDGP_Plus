@@ -385,32 +385,35 @@ if palavra:
             pdesc_fmt = format_pdesc(pdesc)
             st.write(pdesc_fmt, unsafe_allow_html=True)
 
-    elif lemma_candidates:
-        st.subheader("📘 Lookup por lema candidato")
-        matched_any = False
-        for cand in lemma_candidates:
-            if cand in DDGP_INDEX_LEMAS:
-                matched_any = True
-                entry_id = DDGP_INDEX_LEMAS[cand]
-                ent = DDGP_ENTRY.get(str(entry_id))
-                if ent:
-                    gword = ent.get("gword", "")
-                    pdesc = ent.get("pdesc", "")
+   elif lemma_candidates:
+    st.subheader("📘 Lookup por lema candidato")
 
-                    st.markdown(f"**{gword}** (id: {entry_id})")
+    matched_any = False
+    for cand in lemma_candidates:
 
-                    pdesc_fmt = format_pdesc(pdesc)
-                    st.write(pdesc_fmt, unsafe_allow_html=True)
+        # usa a função nova
+        entry_ids = find_entry_ids_for_lemma_candidate(cand)
 
+        if not entry_ids:
+            st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: **{cand}**")
+            continue
 
-                else:
-                    st.warning(f"Lema '{cand}' encontrado no índice (id {entry_id}), mas entrada ausente no JSON ddgp3x_entry.json.")
+        matched_any = True
+
+        # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
+        for entry_id in entry_ids:
+            ent = DDGP_ENTRY.get(str(entry_id))
+            if ent:
+                gword = ent.get("gword", "")
+                pdesc = ent.get("pdesc", "")
+                pdesc_fmt = format_pdesc(pdesc)
+
+                st.markdown(f"**{gword}** (id: {entry_id})")
+                st.markdown(pdesc_fmt, unsafe_allow_html=True)
             else:
-                st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: **{cand}**")
-
-        if not matched_any:
-            st.warning("Nenhuma entrada do DDGP encontrada para a(s) forma(s) ou lema(s) candidatos.")
-    else:
+                st.warning(f"Entrada {entry_id} ausente no JSON.")
+    
+    if not matched_any:
         st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
 
 

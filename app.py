@@ -322,11 +322,79 @@ with col_title:
 
 st.markdown("---")
 
-# Input
-st.write("Digite uma forma grega (com ou sem diacríticos).")
-palavra = st.text_input("Forma grega politônica ou sem diacríticos", value="")
+# ---------------------------
+# Função: transliteração ASCII -> grego (sem acentos; w -> ω)
+# ---------------------------
+def latin_to_basic_grc(s: str) -> str:
+    """Transliteração ASCII básica → grego sem acentos (estilo Hipátia)."""
+    if not s:
+        return s
+
+    # Remove números do input (lego1 -> lego)
+    s = "".join(ch for ch in s if not ch.isdigit())
+
+    table = {
+        "a":"α","b":"β","g":"γ","d":"δ",
+        "e":"ε","z":"ζ","h":"η","q":"θ",
+        "i":"ι","k":"κ","l":"λ","m":"μ",
+        "n":"ν","c":"ξ","o":"ο","p":"π",
+        "r":"ρ","s":"σ","t":"τ","u":"υ",
+        "f":"φ","x":"χ","y":"ψ","w":"ω",
+    }
+
+    out = []
+    prev = ""
+
+    for ch in s:
+        # sigma + space -> final ς
+        if ch == " " and prev == "σ":
+            out[-1] = "ς"
+            out.append(" ")
+            prev = " "
+            continue
+
+        gr = table.get(ch, ch)
+        out.append(gr)
+        prev = gr
+
+    # sigma final on end of word -> ς
+    if out and out[-1] == "σ":
+        out[-1] = "ς"
+
+    return "".join(out)
 
 
+# ---------------------------
+# Input dinâmico: ASCII -> GRC (opção A)
+# ---------------------------
+# inicializa estado
+if "campo_ascii" not in st.session_state:
+    st.session_state["campo_ascii"] = ""
+if "campo_grc" not in st.session_state:
+    st.session_state["campo_grc"] = ""
+
+def atualizar_grego():
+    txt = st.session_state.get("campo_ascii","")
+    # se tudo ASCII, converte; caso contrário assume que o usuário escreveu grego direto
+    if txt and txt.isascii():
+        st.session_state["campo_grc"] = latin_to_basic_grc(txt.lower())
+    else:
+        st.session_state["campo_grc"] = txt
+
+# widget controlado: o usuário digita ASCII (ou grego), e o campo atualiza a versão grega
+st.text_input(
+    "Digite forma (legw, ferw, akouw — ou grego diretamente):",
+    key="campo_ascii",
+    on_change=atualizar_grego
+)
+
+# texto grego que o app usará
+palavra = st.session_state.get("campo_grc","")
+
+
+# ---------------------------
+# Processamento (mantém sua lógica)
+# ---------------------------
 if palavra:
     st.subheader("🧩 Resultado")
 
@@ -341,7 +409,7 @@ if palavra:
             if ent:
                 found_entries.append(ent)
 
-        # 2) Try forma->lema index fallback
+    # 2) Try forma->lema index fallback
     lema_from_form = None
     if not found_entries and DDGP_FORMA_TO_LEMA and simp_form in DDGP_FORMA_TO_LEMA:
         lema_from_form = DDGP_FORMA_TO_LEMA[simp_form]
@@ -375,63 +443,63 @@ if palavra:
     if lema_from_form:
         lemma_candidates.append(simplify(lema_from_form))
 
-    # 3) fallback: tentar derivar lema removendo terminação verbal
+    # 3) fallback: tentar derivar lema removendo terminação verbal comum (ex.: -ουσιν -> raiz)
     form_base = simplify(palavra)
     if form_base.endswith("ουσιν"):
         lemma_candidates.append(form_base[:-5])  # λεγω
 
-    # Deduplicar
+    # Deduplicar mantendo ordem
     seen = set()
     lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 
-  # If dictionary entries were found by exact form, show them first
+
+    # If dictionary entries were found by exact form, show them first
     if found_entries:
         st.subheader("📘 Entradas do DDGP (lookup por forma)")
         for ent in found_entries:
             gid = ent.get("id", "?")
             gword = ent.get("gword", "")
             pdesc = ent.get("pdesc", "")
-    
+
             st.markdown(f"**{gword}** (id: {gid})")
-    
+
             pdesc_fmt = format_pdesc(pdesc)
             st.write(pdesc_fmt, unsafe_allow_html=True)
-    
+
     elif lemma_candidates:
         st.subheader("📘 Lookup por lema candidato")
-    
+
         matched_any = False
 
-    for cand in lemma_candidates:
+        for cand in lemma_candidates:
 
-        # usa a função nova
-        entry_ids = find_entry_ids_for_lemma_candidate(cand)
+            # usa a função nova para encontrar possíveis IDs
+            entry_ids = find_entry_ids_for_lemma_candidate(cand)
 
-        # se não encontrou nada p/ esse candidato → passa pro próximo
-        if not entry_ids:
-            st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: {cand}")
-            continue
+            # se não encontrou nada p/ esse candidato → passa pro próximo
+            if not entry_ids:
+                st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: {cand}")
+                continue
 
-        matched_any = True
+            matched_any = True
 
-        # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
-        for entry_id in entry_ids:
-            ent = DDGP_ENTRY.get(str(entry_id))
-            if ent:
-                gword = ent.get("gword", "")
-                pdesc = ent.get("pdesc", "")
-                pdesc_fmt = format_pdesc(pdesc)
+            # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
+            for entry_id in entry_ids:
+                ent = DDGP_ENTRY.get(str(entry_id))
+                if ent:
+                    gword = ent.get("gword", "")
+                    pdesc = ent.get("pdesc", "")
+                    pdesc_fmt = format_pdesc(pdesc)
 
-                st.markdown(f"**{gword}** (id: {entry_id})")
-                st.markdown(pdesc_fmt, unsafe_allow_html=True)
+                    st.markdown(f"**{gword}** (id: {entry_id})")
+                    st.markdown(pdesc_fmt, unsafe_allow_html=True)
+                else:
+                    st.warning(f"Entrada {entry_id} ausente no JSON.")
 
-            else:
-                st.warning(f"Entrada {entry_id} ausente no JSON.")
-
-    if not matched_any:
+        if not matched_any:
+            st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
+    else:
         st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
-
-
 
 # --- FOOTER (rodapé minimal, versátil e estável) ---
 # Two versions: compact (shown) and long (in expandable)

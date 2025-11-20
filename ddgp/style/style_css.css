@@ -56,13 +56,13 @@ html, body, textarea, input, button {
 /* Abreviaturas gramaticais */
 .abrev {
     font-style: italic;
-    color: #0066cc;
+    color: #0066cc; !important;
 }
 
 /* Abreviaturas de autores/obras em small caps + azul */
 .autor-sc {
     font-variant: small-caps;
-    color: #0066cc;
+    color: #0066cc; !important;
 }
 
 /* Seções do dicionário (♦ ativa, ♦ média, ♦ passiva) */

@@ -384,46 +384,50 @@ if palavra:
     seen = set()
     lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 
-    # If dictionary entries were found by exact form, show them first
-    if found_entries:
-        st.subheader("📘 Entradas do DDGP (lookup por forma)")
-        for ent in found_entries:
-            gid = ent.get("id", "?")
-            gword = ent.get("gword", "")
-            pdesc = ent.get("pdesc", "")
+  # If dictionary entries were found by exact form, show them first
+if found_entries:
+    st.subheader("📘 Entradas do DDGP (lookup por forma)")
+    for ent in found_entries:
+        gid = ent.get("id", "?")
+        gword = ent.get("gword", "")
+        pdesc = ent.get("pdesc", "")
 
-            st.markdown(f"**{gword}** (id: {gid})")
+        st.markdown(f"**{gword}** (id: {gid})")
 
-            pdesc_fmt = format_pdesc(pdesc)
-            st.write(pdesc_fmt, unsafe_allow_html=True)
+        pdesc_fmt = format_pdesc(pdesc)
+        st.write(pdesc_fmt, unsafe_allow_html=True)
 
-    elif lemma_candidates:
-        st.subheader("📘 Lookup por lema candidato")
+elif lemma_candidates:
+    st.subheader("📘 Lookup por lema candidato")
 
-        matched_any = False
-        for cand in lemma_candidates:
+    matched_any = False
+    for cand in lemma_candidates:
 
-            # usa a função nova
-            entry_ids = find_entry_ids_for_lemma_candidate(cand)
+        # usa a função nova
+        entry_ids = find_entry_ids_for_lemma_candidate(cand)
 
-            if not entry_ids:
-                st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: {cand}")
+        # se não encontrou nada p/ esse candidato
+        if not entry_ids:
+            st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: {cand}")
+            continue
 
-                # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
-                for entry_id in entry_ids:
-                    ent = DDGP_ENTRY.get(str(entry_id))
-                    if ent:
-                        gword = ent.get("gword", "")
-                        pdesc = ent.get("pdesc", "")
-                        pdesc_fmt = format_pdesc(pdesc)
+        matched_any = True
 
-                        st.markdown(f"**{gword}** (id: {entry_id})")
-                        st.markdown(pdesc_fmt, unsafe_allow_html=True)
-                    else:
-                        st.warning(f"Entrada {entry_id} ausente no JSON.")
-    
-                if not matched_any:
-                        st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
+        # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
+        for entry_id in entry_ids:
+            ent = DDGP_ENTRY.get(str(entry_id))
+            if ent:
+                gword = ent.get("gword", "")
+                pdesc = ent.get("pdesc", "")
+                pdesc_fmt = format_pdesc(pdesc)
+
+                st.markdown(f"**{gword}** (id: {entry_id})")
+                st.markdown(pdesc_fmt, unsafe_allow_html=True)
+            else:
+                st.warning(f"Entrada {entry_id} ausente no JSON.")
+
+    if not matched_any:
+        st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
 
 
 # --- FOOTER (rodapé minimal, versátil e estável) ---

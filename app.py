@@ -407,7 +407,7 @@ if palavra:
             entry_ids = find_entry_ids_for_lemma_candidate(cand)
 
             if not entry_ids:
-                st.info(f"Nenhum
+                st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: {cand}")
 
                 # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
                 for entry_id in entry_ids:

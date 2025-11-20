@@ -267,11 +267,6 @@ with col_title:
 
 st.markdown("---")
 
-# ==== DIAGNÓSTICO TEMPORÁRIO ====
-st.markdown("### Diagnóstico HTML do format_pdesc")
-st.code(format_pdesc("( ép. hom. fut.)"), language="html")
-# =================================
-
 # Input
 st.write("Digite uma forma grega (com ou sem diacríticos).")
 palavra = st.text_input("Forma grega politônica ou sem diacríticos", value="")

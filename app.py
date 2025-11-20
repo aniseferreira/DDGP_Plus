@@ -385,22 +385,22 @@ if palavra:
     lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 
   # If dictionary entries were found by exact form, show them first
-if found_entries:
-    st.subheader("📘 Entradas do DDGP (lookup por forma)")
-    for ent in found_entries:
-        gid = ent.get("id", "?")
-        gword = ent.get("gword", "")
-        pdesc = ent.get("pdesc", "")
-
-        st.markdown(f"**{gword}** (id: {gid})")
-
-        pdesc_fmt = format_pdesc(pdesc)
-        st.write(pdesc_fmt, unsafe_allow_html=True)
-
-elif lemma_candidates:
-    st.subheader("📘 Lookup por lema candidato")
-
-    matched_any = False
+    if found_entries:
+        st.subheader("📘 Entradas do DDGP (lookup por forma)")
+        for ent in found_entries:
+            gid = ent.get("id", "?")
+            gword = ent.get("gword", "")
+            pdesc = ent.get("pdesc", "")
+    
+            st.markdown(f"**{gword}** (id: {gid})")
+    
+            pdesc_fmt = format_pdesc(pdesc)
+            st.write(pdesc_fmt, unsafe_allow_html=True)
+    
+    elif lemma_candidates:
+        st.subheader("📘 Lookup por lema candidato")
+    
+        matched_any = False
 
     for cand in lemma_candidates:
 

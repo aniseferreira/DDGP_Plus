@@ -414,7 +414,7 @@ if palavra:
                         st.warning(f"Entrada {entry_id} ausente no JSON.")
     
             if not matched_any:
-                st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
+                        st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
 
 
 # --- FOOTER (rodapé minimal, versátil e estável) ---

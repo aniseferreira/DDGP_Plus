@@ -364,10 +364,28 @@ if palavra:
 
     # If we have a lemma candidate from morph or from forma_to_lema, try to lookup dictionary
     lemma_candidates = []
-    if morph_result and morph_result.get("lema"):
-        lemma_candidates.append(simplify(morph_result.get("lema")))
-    if lema_from_form:
-        lemma_candidates.append(simplify(lema_from_form))
+
+# 1) lema vindo da morfologia (se válido)
+if morph_result and morph_result.get("lema"):
+    lm = simplify(morph_result.get("lema"))
+    if lm and lm != simplify(palavra):
+        lemma_candidates.append(lm)
+
+# 2) lema vindo do índice forma→lema (muito importante!)
+if lema_from_form:
+    lemma_candidates.append(simplify(lema_from_form))
+
+# 3) fallback: tentar simplificar a forma para tentar achar o lema numerado
+#    exemplo: λεγουσιν → λεγω → retorna λέγω1/λέγω2
+form_base = simplify(palavra)
+# remove sufixos verbais comuns como '-ουσιν'
+if form_base.endswith("ουσιν"):
+    lemma_candidates.append(form_base[:-5])  # λεγω
+
+# Deduplicar
+seen = set()
+lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
+
     # remove duplicates keeping order
     seen = set(); lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 

@@ -61,7 +61,7 @@ html, body, textarea, input, button {
 /* Abreviaturas de autores/obras em small caps + azul */
 .autor-sc {
     font-variant: small-caps;
-    color: #0044cc;
+    color: #0066cc;
 }
 
 /* Seções do dicionário (♦ ativa, ♦ média, ♦ passiva) */

@@ -58,10 +58,10 @@ html, body, textarea, input, button {
     color: #0066cc;
 }
 
-/* Abreviaturas de autores/obras (small caps) */
+/* Abreviaturas de autores/obras em small caps + azul */
 .autor-sc {
     font-variant: small-caps;
-    letter-spacing: 0.5px;
+    color: #0044cc;
 }
 
 /* Seções do dicionário (♦ ativa, ♦ média, ♦ passiva) */

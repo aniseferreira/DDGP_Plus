@@ -208,9 +208,9 @@ col_left, col_title = st.columns([1, 10])
 with col_left:
     try:
         if LOGO_LOCAL and os.path.exists(os.path.join(BASE_DIR, LOGO_LOCAL)):
-            st.image(os.path.join(BASE_DIR, LOGO_LOCAL), width=64)
+            st.image(os.path.join(BASE_DIR, LOGO_LOCAL), width=120)
         else:
-            st.image(LOGO_URL, width=64)
+            st.image(LOGO_URL, width=120)
     except Exception:
         st.text("")
 with col_title:

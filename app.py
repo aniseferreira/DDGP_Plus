@@ -269,11 +269,8 @@ def _on_change_convert():
         st.session_state["campo_grc"] = txt
 
 # Single visible input: user types (latin or greek) and sees greek
-st.text_input(
-    "Digite (pode usar letras latinas: legw, ferw, akouw — ou grego diretamente):",
-    key="campo_ascii",
-    on_change=_on_change_convert
-)
+st.markdown('<div class="ddgp-input-label">Digite (pode usar letras latinas: legw, ferw, akouw — ou grego diretamente):</div>', unsafe_allow_html=True)
+st.text_input("", key="campo_ascii")
 
 # internal word used by the pipeline (always greek)
 palavra = st.session_state.get("campo_grc", "").strip()

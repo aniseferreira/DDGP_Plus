@@ -16,7 +16,6 @@ st.set_page_config(page_title="DDGP Plus — Morph & Dictionary", page_icon=LOGO
 # ---------------------------
 # Carregar CSS customizado
 # ---------------------------
-
 def load_css(file_name: str):
     try:
         with open(file_name, "r", encoding="utf-8") as f:
@@ -39,7 +38,6 @@ if Path("style_map.css").exists():
 # ---------------------------
 # Utilitários Unicode e JSON
 # ---------------------------
-
 def normalize(text):
     return unicodedata.normalize("NFC", (text or "")).strip()
 
@@ -52,7 +50,6 @@ def simplify(text):
     s = "".join(ch for ch in s if not ch.isdigit())
     s = s.replace(".", "").replace("-", "").replace("/", "").replace(" ", "")
     return s.lower()
-
 
 def load_json_safe(path):
     try:
@@ -90,14 +87,12 @@ for p in ABREV_PATHS:
 # ---------------------------
 # Formatação de abreviaturas
 # ---------------------------
-
 def _escape_for_regex(s: str) -> str:
     return re.escape(s)
 
 _abbrev_list_sorted = sorted(list(ABREV.keys()), key=lambda x: -len(x))
 _abbrev_patterns = [r"(?<!\w)" + _escape_for_regex(a) + r"(?!\w)" for a in _abbrev_list_sorted]
 ABREV_REGEX = re.compile(r"(" + r"|".join(_abbrev_patterns) + r")") if _abbrev_patterns else None
-
 
 def format_abrevs(texto: str) -> str:
     """Substitui abreviaturas por spans com classes e tooltip. Usar apenas no dicionário."""
@@ -116,16 +111,16 @@ def format_abrevs(texto: str) -> str:
     return ABREV_REGEX.sub(_repl, texto)
 
 # ---------------------------
-# format_pdesc: quebras apos ◆
+# format_pdesc: quebras apos ♦ (mantém '♦ label' na mesma linha)
 # ---------------------------
-
 def format_pdesc(pdesc: str) -> str:
     if not pdesc:
         return ""
     # Normalize line endings
     p = pdesc.replace('\r\n', '\n').replace('\r', '\n')
-    # Ensure diamonds are on their own paragraph and followed by a break
-    p = p.replace('♦', '<p class="ddgp-sec">♦</p>')
+    # Ensure diamonds followed by a space keep label on same line
+    # replace '♦ ' with a span and a following space; keep '♦' alone untouched if no label follows
+    p = re.sub(r'♦\s+', '<br><span class="ddgp-sec">♦</span> ', p)
     # apply abrevs formatting
     p = format_abrevs(p)
     # preserve simple newlines as <br/>
@@ -135,7 +130,6 @@ def format_pdesc(pdesc: str) -> str:
 # ---------------------------
 # Transliteration ASCII -> Greek (basic)
 # ---------------------------
-
 def latin_to_basic_grc(s: str) -> str:
     """Transliteração ASCII básica -> grego sem acentos (hipatia-style)."""
     if not s:
@@ -220,42 +214,39 @@ with col_left:
     except Exception:
         st.text("")
 with col_title:
-    st.markdown("## DDGP Plus — Analisador Morfológico e Dicionário Digital de Grego–Português")
+    st.markdown("## DDGP Plus — Analisador Morfológica e Dicionário Digital de Grego–Português")
     st.markdown("Versão 2025 — online")
 st.markdown("---")
 
 # ---------------------------
-# INPUT: permitir digitar latim mas mostrar grego no campo exibido
-# - campo ASCII editável + campo grego somente-leitura
+# INPUT: single input that converts latin keystrokes to greek visually
+# We'll intercept user typing and update session_state so the field shows greek.
 # ---------------------------
 if "campo_ascii" not in st.session_state:
     st.session_state["campo_ascii"] = ""
 if "campo_grc" not in st.session_state:
     st.session_state["campo_grc"] = ""
 
-def atualizar_grego():
+def _on_change_convert():
     txt = st.session_state.get("campo_ascii", "")
-    if txt and txt.isascii():
-        st.session_state["campo_grc"] = latin_to_basic_grc(txt.lower())
+    # if ascii-only, transliterate and set campo_ascii to greek so user sees greek characters
+    if txt and all(ord(ch) < 128 for ch in txt):
+        gr = latin_to_basic_grc(txt.lower())
+        # update both ascii and grc to the greek form so the input shows greek
+        st.session_state["campo_ascii"] = gr
+        st.session_state["campo_grc"] = gr
     else:
+        # already greek, just normalize
         st.session_state["campo_grc"] = txt
 
-# campo editável onde usuário digita (pode escrever em latino)
+# Single visible input: user types (latin or greek) and sees greek
 st.text_input(
     "Digite (pode usar letras latinas: legw, ferw, akouw — ou grego diretamente):",
     key="campo_ascii",
-    on_change=atualizar_grego
+    on_change=_on_change_convert
 )
 
-# campo que mostra a forma convertida — somente leitura
-st.text_input(
-    "Forma (convertida para grego):",
-    value=st.session_state.get("campo_grc", ""),
-    key="campo_grc_display",
-    disabled=True
-)
-
-# palavra usada internamente
+# internal word used by the pipeline (always greek)
 palavra = st.session_state.get("campo_grc", "").strip()
 
 # ---------------------------
@@ -348,7 +339,7 @@ if palavra:
 # --- FOOTER ---
 st.markdown("---")
 footer_short = """
-**DDGP Plus** — Analisador Morfológico e Dicionário Digital de Grego–Português.  
+**DDGP Plus** — Analisador Morfológica e Dicionário Digital de Grego–Português.  
 Versão 2025. Disponível em: https://ddgp-plus.streamlit.app  
 Baseado no Dicionário Digital de Grego–Português (DDGP e DGP), pelo Projeto Letras Clássicas Digitais FCLAr/UNESP .
 Licenciado sob **CC BY–NC–ND 4.0**.

@@ -214,7 +214,7 @@ with col_left:
     except Exception:
         st.text("")
 with col_title:
-    st.markdown("## DDGP Plus — Analisador Morfológica e Dicionário Digital de Grego–Português")
+    st.markdown("## DDGP Plus — Analisador Morfológico e Dicionário Digital de Grego–Português")
     st.markdown("Versão 2025 — online")
 st.markdown("---")
 

@@ -87,3 +87,18 @@ p .autor-sc,
     font-variant: small-caps;
     color: #0066cc !important;
 }
+
+/* aumenta fonte apenas no corpo do Streamlit */
+:root {
+    --ddgp-font-size: 22px;
+}
+
+div.stMarkdown, div.stText, div.stJson, div.stAlert {
+    font-size: var(--ddgp-font-size);
+}
+
+#ddgp-instrucao {
+    font-size: 24px !important;
+    font-weight: 500;
+}
+

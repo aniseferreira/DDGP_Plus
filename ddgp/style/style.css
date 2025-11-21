@@ -90,7 +90,7 @@ p .autor-sc,
 
 /* aumenta fonte apenas no corpo do Streamlit */
 :root {
-    --ddgp-font-size: 22px;
+    --ddgp-font-size: 23px;
 }
 
 div.stMarkdown, div.stText, div.stJson, div.stAlert {

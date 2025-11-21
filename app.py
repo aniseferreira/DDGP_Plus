@@ -375,22 +375,18 @@ if "campo_grc" not in st.session_state:
 
 def atualizar_grego():
     txt = st.session_state.get("campo_ascii","")
-    # se tudo ASCII, converte; caso contrário assume que o usuário escreveu grego direto
     if txt and txt.isascii():
         st.session_state["campo_grc"] = latin_to_basic_grc(txt.lower())
     else:
         st.session_state["campo_grc"] = txt
 
-# widget controlado: o usuário digita ASCII (ou grego), e o campo atualiza a versão grega
 st.text_input(
     "Digite forma (legw, ferw, akouw — ou grego diretamente):",
     key="campo_ascii",
     on_change=atualizar_grego
 )
 
-# texto grego que o app usará
 palavra = st.session_state.get("campo_grc","")
-
 
 # ---------------------------
 # Processamento (mantém sua lógica)

@@ -1,25 +1,21 @@
-# app.py — DDGP Plus (versão simples + dicionário) — com logo, favicon e rodapé seguro
+# app.py — DDGP Plus (corrigido)
 # -*- coding: utf-8 -*-
 
 import os
 import json
 import unicodedata
+import re
+from pathlib import Path
 import streamlit as st
 
 # configure page (title + favicon)
-LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"  
-# original logo URL
-# If you prefer a local logo, put it in ddgp/static/ddgp.png and set LOGO_LOCAL = "ddgp/static/ddgp.png"
+LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
 LOGO_LOCAL = None
-
 st.set_page_config(page_title="DDGP Plus — Morph & Dictionary", page_icon=LOGO_URL, layout="wide")
 
-
-# ------------------------------------------------------------
-# Carregar CSS customizado (inserido automaticamente)
-# Coloque style.css e style_map.css em /ddgp/style/
-# ------------------------------------------------------------
-from pathlib import Path
+# ---------------------------
+# Carregar CSS customizado
+# ---------------------------
 
 def load_css(file_name: str):
     try:
@@ -27,255 +23,37 @@ def load_css(file_name: str):
             css = f"<style>{f.read()}</style>"
             st.markdown(css, unsafe_allow_html=True)
     except FileNotFoundError:
-        # arquivo de estilo não encontrado; continuar sem falha
         pass
 
-# paths recomendados
 style_main = "ddgp/style/style.css"
 style_map = "ddgp/style/style_map.css"
-
-# carregar se existirem
 if Path(style_main).exists():
     load_css(style_main)
 if Path(style_map).exists():
     load_css(style_map)
-
-# Também carrega se estiver na raiz (para desenvolvimento local)
 if Path("style.css").exists():
     load_css("style.css")
 if Path("style_map.css").exists():
     load_css("style_map.css")
 
-# --- Inline fallback CSS (garante estilos mesmo se style.css falhar) ---
-_inline_css = """
-<style>
-/* Abreviaturas gramaticais */
-.abrev {
-    font-style: italic;
-    color: #0066cc;
-    cursor: help;
-}
+# ---------------------------
+# Utilitários Unicode e JSON
+# ---------------------------
 
-/* Abreviaturas de autores/obras (small caps) */
-.autor-sc {
-    font-variant: small-caps;
-    letter-spacing: 0.4px;
-    cursor: help;
-}
-
-/* Seções do dicionário (♦ ativa, ♦ média, ♦ passiva) */
-.ddgp-sec {
-    font-weight: 600;
-    margin-top: 0.8em;
-    margin-bottom: 0.0em;
-    font-size: 1.02em;
-}
-
-/* Parágrafo de sentido/definição logo após o marcador */
-.ddgp-mean {
-    margin-top: 0.2em;
-    margin-bottom: 0.6em;
-}
-
-/* Garante que spans com title mostrem pointer e não sejam afetados por reset CSS */
-.abrev, .autor-sc { text-decoration: none; }
-.abrev[title], .autor-sc[title] { position: relative; }
-</style>
-"""
-st.markdown(_inline_css, unsafe_allow_html=True)
-
-
-# ======= Carregar abreviaturas (abrev.json) =======
-# Procura primeiro no diretório do projeto, depois em /mnt/data (ambiente de desenvolvimento)
-ABREV_PATHS = ["ddgp/data/abrev.json", "ddgp/abrev.json", "abrev.json", "/mnt/data/abrev.json"]
-ABREV = {}
-for p in ABREV_PATHS:
-    try:
-        with open(p, 'r', encoding='utf-8') as f:
-            ABREV = json.load(f)
-            break
-    except FileNotFoundError:
-        continue
-    except Exception:
-        ABREV = {}
-        break
-
-# ======= Função de formatação de abreviaturas =======
-# Implementação simples e robusta que evita substituir partes de palavras:
-import re
-
-def _escape_for_regex(s: str) -> str:
-    return re.escape(s)
-
-# Ordena por comprimento decrescente para evitar colisões (e.g., 'pl.' vs 'plín.')
-_abbrev_list_sorted = sorted(list(ABREV.keys()), key=lambda x: -len(x))
-_abbrev_patterns = [r"(?<!\w)" + _escape_for_regex(a) + r"(?!\w)" for a in _abbrev_list_sorted]
-
-if _abbrev_patterns:
-    ABREV_REGEX = re.compile(r"(" + r"|".join(_abbrev_patterns) + r")")
-else:
-    ABREV_REGEX = None
-
-def format_abrevs(texto: str) -> str:
-    """Substitui abreviaturas por spans com classes e tooltip. Usar apenas no dicionário."""
-    if not texto or not ABREV_REGEX:
-        return texto
-
-    def _repl(m):
-        ab = m.group(0)
-        info = ABREV.get(ab, {})
-        desc = info.get("descricao", "")
-        tipo = info.get("tipo", "")
-
-        # autores/obras/culturais = small caps
-        cls = "autor-sc" if ("Autor" in tipo or "Obras" in tipo or "Nome" in tipo or "Cultural" in tipo) else "abrev"
-
-        title = desc.replace('"', '&quot;')
-        return f'<span class="{cls}" title="{title}">{ab}</span>'
-
-    return ABREV_REGEX.sub(_repl, texto)
-
-
-import re
-
-def format_pdesc(pdesc: str) -> str:
-    """
-    Transforma o pdesc para:
-      <p class='ddgp-sec'>♦ ativa</p>
-      <p class='ddgp-mean'>...texto da ativa...</p>
-    e aplica format_abrevs() ao conteúdo.
-    """
-
-    if not pdesc:
-        return ""
-
-    text = pdesc.strip()
-
-    # Normaliza espaços em branco
-    text = re.sub(r"\s+", " ", text)
-
-    # Padrão para encontrar os marcadores ♦ com rótulos (ativa|média|passiva)
-    # Captura '♦' + espaço opcional + rótulo + resto até próximo '♦' (lookahead)
-    pattern = re.compile(r"♦\s*(ativa|m[eé]dia|passiva)\s*(?=(?:.*?♦)|$)", re.IGNORECASE)
-
-    # Se não encontrar marcadores bem formados, só aplica abreviaturas e devolve
-    if not pattern.search(text):
-        # aplicar abreviaturas ao texto inteiro
-        return format_abrevs(text)
-
-    parts = []
-    # vamos percorrer ocorrências e pegar fatias
-    last_idx = 0
-    for m in pattern.finditer(text):
-        start = m.start()
-        # texto antes do marcador (pode conter prefixo, ex.: paradigmas)
-        if start > last_idx:
-            before = text[last_idx:start].strip()
-            if before:
-                parts.append(("body", before))
-        label = m.group(1).strip()
-        # a seção começa no m.end(); precisamos até o próximo marcador ou fim
-        # procurar próxima ocorrência a partir de m.end()
-        next_m = pattern.search(text, m.end())
-        if next_m:
-            section_text = text[m.end():next_m.start()].strip()
-            last_idx = next_m.start()
-        else:
-            section_text = text[m.end():].strip()
-            last_idx = len(text)
-        # adiciona marcador + conteúdo
-        parts.append(("marker", "♦ " + label))
-        parts.append(("mean", section_text))
-
-    # Caso reste texto após o último marcador
-    if last_idx < len(text):
-        tail = text[last_idx:].strip()
-        if tail:
-            parts.append(("tail", tail))
-
-    # Construir HTML final
-    out_fragments = []
-    for kind, val in parts:
-        if kind == "body":
-            # corpo antes de marcadores (por exemplo, paradigma), aplicar abrevs e manter
-            out_fragments.append(f"<p>{format_abrevs(val)}</p>")
-        elif kind == "marker":
-            # marcador numa linha com label
-            out_fragments.append(f"<p class='ddgp-sec'>{val}</p>")
-        elif kind == "mean":
-            # parágrafo de sentido
-            out_fragments.append(f"<p class='ddgp-mean'>{format_abrevs(val)}</p>")
-        elif kind == "tail":
-            out_fragments.append(f"<p>{format_abrevs(val)}</p>")
-
-    return "\n".join(out_fragments)
-    
-   
-
-# helper utils
 def normalize(text):
     return unicodedata.normalize("NFC", (text or "")).strip()
 
 def simplify(text):
     s = normalize(text)
-    s = "".join(ch for ch in unicodedata.normalize("NFD", s)
-                if not unicodedata.combining(ch))
-    s = s.lower()
-
-    # remover dígitos
+    # remove combining diacritics
+    s = unicodedata.normalize("NFD", s)
+    s = "".join(ch for ch in s if not unicodedata.combining(ch))
+    # remove digits and basic punctuation used in lemmata (retain greek letters and ascii)
     s = "".join(ch for ch in s if not ch.isdigit())
+    s = s.replace(".", "").replace("-", "").replace("/", "").replace(" ", "")
+    return s.lower()
 
-    # opcional: remover ponto, traço, barra
-    for ch in [".", "-", "/", " "]:
-        s = s.replace(ch, "")
 
-    return s
-
-def find_entry_ids_for_lemma_candidate(cand: str):
-    """
-    Dado um candidato de lema (em grego, poss. com/sem dígito),
-    devolve ids de entradas correspondentes no DDGP:
-      - busca direta
-      - busca por normalização Unicode
-      - busca por prefixo (captura lemas numerados λέγω1, λέγω2 etc.)
-    """
-    if not cand:
-        return []
-
-    base = simplify(cand)  # já remove diacríticos e dígitos
-
-    results = []
-    seen = set()
-
-    # 1 — tentativa direta
-    if base in DDGP_INDEX_LEMAS:
-        eid = DDGP_INDEX_LEMAS[base]
-        results.append(eid)
-        seen.add(eid)
-
-    # 2 — normalizações Unicode
-    for variant in (unicodedata.normalize("NFC", base),
-                    unicodedata.normalize("NFD", base)):
-        if variant in DDGP_INDEX_LEMAS:
-            eid = DDGP_INDEX_LEMAS[variant]
-            if eid not in seen:
-                results.append(eid); seen.add(eid)
-
-    # 3 — fallback: buscar todos que começam com o lema simplificado
-    for k, eid in DDGP_INDEX_LEMAS.items():
-        # normalizar chave
-        k_simp = "".join(
-            ch for ch in unicodedata.normalize("NFD", k)
-            if not unicodedata.combining(ch)
-        ).lower()
-        k_simp = "".join(ch for ch in k_simp if not ch.isdigit())
-
-        if k_simp.startswith(base) and eid not in seen:
-            results.append(eid); seen.add(eid)
-
-    return results
-
-# safe json loader
 def load_json_safe(path):
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -286,16 +64,9 @@ def load_json_safe(path):
         st.warning(f"Erro ao ler JSON {os.path.basename(path)}: {e}")
         return None
 
-# try to import morph_simple (placed in ddgp/morph_simple.py)
-MORPH_AVAILABLE = False
-try:
-    from ddgp.morph_simple import morph_analyze_simple
-    MORPH_AVAILABLE = True
-except Exception as e:
-    morph_analyze_simple = None
-    st.warning("morph_simple não pôde ser importado — a análise morfológica ficará indisponível. Erro: " + str(e))
-
-# Load DDGP JSONs (if present)
+# ---------------------------
+# Carregar dados DDGP e abreviaturas
+# ---------------------------
 BASE_DIR = os.path.dirname(__file__)
 DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
 
@@ -304,35 +75,72 @@ DDGP_INDEX_LEMAS = load_json_safe(os.path.join(DATA_DIR, "ddgp_index_lemas.json"
 DDGP_INDEX_FORMAS = load_json_safe(os.path.join(DATA_DIR, "ddgp_index_formas_final.json")) or {}
 DDGP_FORMA_TO_LEMA = load_json_safe(os.path.join(DATA_DIR, "ddgp_forma_to_lema.json")) or {}
 
-# --- HEADER with logo on the left ---
-col_left, col_title = st.columns([1, 10])
-with col_left:
+ABREV_PATHS = [os.path.join(DATA_DIR, "abrev.json"), "ddgp/abrev.json", "abrev.json", "/mnt/data/abrev.json"]
+ABREV = {}
+for p in ABREV_PATHS:
     try:
-        if LOGO_LOCAL and os.path.exists(os.path.join(BASE_DIR, LOGO_LOCAL)):
-            st.image(os.path.join(BASE_DIR, LOGO_LOCAL), width=64)
-        else:
-            st.image(LOGO_URL, width=64)
+        if p and Path(p).exists():
+            with open(p, 'r', encoding='utf-8') as f:
+                ABREV = json.load(f)
+                break
     except Exception:
-        # fallback: show nothing (não quebrar)
-        st.text("")
-
-with col_title:
-    st.markdown("## DDGP Plus — Analisador Morfológico e Dicionário Digital de Grego–Português")
-    st.markdown("Versão 2025 — online")
-
-st.markdown("---")
+        ABREV = {}
+        break
 
 # ---------------------------
-# Função: transliteração ASCII -> grego (sem acentos; w -> ω)
+# Formatação de abreviaturas
 # ---------------------------
+
+def _escape_for_regex(s: str) -> str:
+    return re.escape(s)
+
+_abbrev_list_sorted = sorted(list(ABREV.keys()), key=lambda x: -len(x))
+_abbrev_patterns = [r"(?<!\w)" + _escape_for_regex(a) + r"(?!\w)" for a in _abbrev_list_sorted]
+ABREV_REGEX = re.compile(r"(" + r"|".join(_abbrev_patterns) + r")") if _abbrev_patterns else None
+
+
+def format_abrevs(texto: str) -> str:
+    """Substitui abreviaturas por spans com classes e tooltip. Usar apenas no dicionário."""
+    if not texto or not ABREV_REGEX:
+        return texto
+
+    def _repl(m):
+        ab = m.group(0)
+        info = ABREV.get(ab, {}) if ABREV else {}
+        desc = info.get("descricao", "") if isinstance(info, dict) else ""
+        tipo = info.get("tipo", "") if isinstance(info, dict) else ""
+        cls = "autor-sc" if ("Autor" in tipo or "Obras" in tipo or "Nome" in tipo or "Cultural" in tipo) else "abrev"
+        title = desc.replace('"', '&quot;')
+        return f'<span class="{cls}" title="{title}">{ab}</span>'
+
+    return ABREV_REGEX.sub(_repl, texto)
+
+# ---------------------------
+# format_pdesc: quebras apos ◆
+# ---------------------------
+
+def format_pdesc(pdesc: str) -> str:
+    if not pdesc:
+        return ""
+    # Normalize line endings
+    p = pdesc.replace('\r\n', '\n').replace('\r', '\n')
+    # Ensure diamonds are on their own paragraph and followed by a break
+    p = p.replace('♦', '<p class="ddgp-sec">♦</p>')
+    # apply abrevs formatting
+    p = format_abrevs(p)
+    # preserve simple newlines as <br/>
+    p = p.replace('\n', '<br/>')
+    return p
+
+# ---------------------------
+# Transliteration ASCII -> Greek (basic)
+# ---------------------------
+
 def latin_to_basic_grc(s: str) -> str:
-    """Transliteração ASCII básica → grego sem acentos (estilo Hipátia)."""
+    """Transliteração ASCII básica -> grego sem acentos (hipatia-style)."""
     if not s:
         return s
-
-    # Remove números do input (lego1 -> lego)
     s = "".join(ch for ch in s if not ch.isdigit())
-
     table = {
         "a":"α","b":"β","g":"γ","d":"δ",
         "e":"ε","z":"ζ","h":"η","q":"θ",
@@ -341,60 +149,117 @@ def latin_to_basic_grc(s: str) -> str:
         "r":"ρ","s":"σ","t":"τ","u":"υ",
         "f":"φ","x":"χ","y":"ψ","w":"ω",
     }
-
     out = []
     prev = ""
-
     for ch in s:
-        # sigma + space -> final ς
+        # treat spaces to produce final sigma ς when appropriate
         if ch == " " and prev == "σ":
             out[-1] = "ς"
             out.append(" ")
             prev = " "
             continue
-
         gr = table.get(ch, ch)
         out.append(gr)
         prev = gr
-
-    # sigma final on end of word -> ς
     if out and out[-1] == "σ":
         out[-1] = "ς"
-
     return "".join(out)
 
+# ---------------------------
+# Funções de analise e fallback (import morph if available)
+# ---------------------------
+MORPH_AVAILABLE = False
+try:
+    from ddgp.morph_simple import morph_analyze_simple
+    MORPH_AVAILABLE = True
+except Exception as e:
+    morph_analyze_simple = None
+    st.warning("morph_simple não pôde ser importado — a análise morfológica ficará indisponível. Erro: " + str(e))
+
+# Função para encontrar todos os entry ids correspondentes a um candidato de lema
+def find_entry_ids_for_lemma_candidate(cand: str):
+    if not cand:
+        return []
+    base = simplify(cand)
+    results = []
+    seen = set()
+    # busca direta
+    if base in DDGP_INDEX_LEMAS:
+        eid = DDGP_INDEX_LEMAS[base]
+        if eid not in seen:
+            results.append(eid); seen.add(eid)
+    # variantes unicode
+    for variant in (unicodedata.normalize("NFC", base), unicodedata.normalize("NFD", base)):
+        if variant in DDGP_INDEX_LEMAS:
+            eid = DDGP_INDEX_LEMAS[variant]
+            if eid not in seen:
+                results.append(eid); seen.add(eid)
+    # fallback: procurar chaves que comecem com base (capta lemas numerados)
+    for k, eid in DDGP_INDEX_LEMAS.items():
+        try:
+            k_simp = unicodedata.normalize("NFD", k)
+            k_simp = "".join(ch for ch in k_simp if not unicodedata.combining(ch)).lower()
+            k_simp = "".join(ch for ch in k_simp if not ch.isdigit())
+        except Exception:
+            k_simp = k
+        if k_simp.startswith(base):
+            if eid not in seen:
+                results.append(eid); seen.add(eid)
+    return results
 
 # ---------------------------
-# Input dinâmico: ASCII -> GRC (corrigido)
+# HEADER / LOGO
+# ---------------------------
+col_left, col_title = st.columns([1, 10])
+with col_left:
+    try:
+        if LOGO_LOCAL and os.path.exists(os.path.join(BASE_DIR, LOGO_LOCAL)):
+            st.image(os.path.join(BASE_DIR, LOGO_LOCAL), width=64)
+        else:
+            st.image(LOGO_URL, width=64)
+    except Exception:
+        st.text("")
+with col_title:
+    st.markdown("## DDGP Plus — Analisador Morfológico e Dicionário Digital de Grego–Português")
+    st.markdown("Versão 2025 — online")
+st.markdown("---")
+
+# ---------------------------
+# INPUT: permitir digitar latim mas mostrar grego no campo exibido
+# - campo ASCII editável + campo grego somente-leitura
 # ---------------------------
 if "campo_ascii" not in st.session_state:
     st.session_state["campo_ascii"] = ""
-
 if "campo_grc" not in st.session_state:
     st.session_state["campo_grc"] = ""
 
 def atualizar_grego():
     txt = st.session_state.get("campo_ascii", "")
-
-    # Apenas ASCII vira grego — NÃO envia ASCII para a morfologia
     if txt and txt.isascii():
         st.session_state["campo_grc"] = latin_to_basic_grc(txt.lower())
     else:
-        st.session_state["campo_grc"] = txt  # já está em grego
+        st.session_state["campo_grc"] = txt
 
-# Campo digitado pelo usuário
+# campo editável onde usuário digita (pode escrever em latino)
 st.text_input(
-    "Digite uma forma grega (você pode usar legw, ferw, akouw etc.):",
+    "Digite (pode usar letras latinas: legw, ferw, akouw — ou grego diretamente):",
     key="campo_ascii",
     on_change=atualizar_grego
 )
 
-# Esta é a forma que será usada pela morfologia + DDGP
-palavra = st.session_state["campo_grc"]
+# campo que mostra a forma convertida — somente leitura
+st.text_input(
+    "Forma (convertida para grego):",
+    value=st.session_state.get("campo_grc", ""),
+    key="campo_grc_display",
+    disabled=True
+)
 
+# palavra usada internamente
+palavra = st.session_state.get("campo_grc", "").strip()
 
 # ---------------------------
-# Processamento (mantém sua lógica)
+# MAIN: processa quando houver palavra
 # ---------------------------
 if palavra:
     st.subheader("🧩 Resultado")
@@ -404,7 +269,6 @@ if palavra:
     found_entries = []
     if DDGP_INDEX_FORMAS and simp_form in DDGP_INDEX_FORMAS:
         ids = DDGP_INDEX_FORMAS[simp_form]
-        # collect first up to 10 entries
         for i in ids[:10]:
             ent = DDGP_ENTRY.get(str(i))
             if ent:
@@ -433,101 +297,72 @@ if palavra:
 
     # If we have a lemma candidate from morph or from forma_to_lema, try to lookup dictionary
     lemma_candidates = []
-
-    # 1) lema vindo da morfologia (se válido)
     if morph_result and morph_result.get("lema"):
-        lm = simplify(morph_result.get("lema"))
-        if lm and lm != simplify(palavra):
-            lemma_candidates.append(lm)
-
-    # 2) lema vindo do índice forma→lema
+        lemma_candidates.append(simplify(morph_result.get("lema")))
     if lema_from_form:
         lemma_candidates.append(simplify(lema_from_form))
 
-    # 3) fallback: tentar derivar lema removendo terminação verbal comum (ex.: -ουσιν -> raiz)
+    # fallback: try to heuristically derive lemma from common verbal endings
     form_base = simplify(palavra)
     if form_base.endswith("ουσιν"):
-        lemma_candidates.append(form_base[:-5])  # λεγω
-
-    # Deduplicar mantendo ordem
-    seen = set()
-    lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
-
+        lemma_candidates.append(form_base[:-5])
+    # remove duplicates keeping order
+    seen = set(); lemma_candidates = [x for x in lemma_candidates if not (x in seen or seen.add(x))]
 
     # If dictionary entries were found by exact form, show them first
     if found_entries:
         st.subheader("📘 Entradas do DDGP (lookup por forma)")
         for ent in found_entries:
-            gid = ent.get("id", "?")
-            gword = ent.get("gword", "")
-            pdesc = ent.get("pdesc", "")
-
-            st.markdown(f"**{gword}** (id: {gid})")
-
+            gid = ent.get("id","?")
+            gword = ent.get("gword","")
+            pdesc = ent.get("pdesc","")
             pdesc_fmt = format_pdesc(pdesc)
-            st.write(pdesc_fmt, unsafe_allow_html=True)
+            st.markdown(f"**{gword}** (id: {gid})")
+            st.markdown(pdesc_fmt, unsafe_allow_html=True)
 
     elif lemma_candidates:
         st.subheader("📘 Lookup por lema candidato")
-
         matched_any = False
-
         for cand in lemma_candidates:
-
-            # usa a função nova para encontrar possíveis IDs
+            # busca todos os entry ids correspondentes (inclui lemas numerados)
             entry_ids = find_entry_ids_for_lemma_candidate(cand)
-
-            # se não encontrou nada p/ esse candidato → passa pro próximo
             if not entry_ids:
-                st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: {cand}")
+                st.info(f"Nenhuma entrada encontrada no índice para o lema candidato: **{cand}**")
                 continue
-
             matched_any = True
-
-            # exibir TODOS os verbetes correspondentes (λέγω1, λέγω2, ...)
             for entry_id in entry_ids:
                 ent = DDGP_ENTRY.get(str(entry_id))
                 if ent:
                     gword = ent.get("gword", "")
                     pdesc = ent.get("pdesc", "")
                     pdesc_fmt = format_pdesc(pdesc)
-
                     st.markdown(f"**{gword}** (id: {entry_id})")
                     st.markdown(pdesc_fmt, unsafe_allow_html=True)
                 else:
                     st.warning(f"Entrada {entry_id} ausente no JSON.")
-
         if not matched_any:
-            st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
+            st.warning("Nenhuma entrada do DDGP encontrada para a(s) forma(s) ou lema(s) candidatos.")
     else:
         st.warning("Nenhuma entrada do DDGP encontrada para esta forma ou lema.")
 
-# --- FOOTER (rodapé minimal, versátil e estável) ---
-# Two versions: compact (shown) and long (in expandable)
+# --- FOOTER ---
+st.markdown("---")
 footer_short = """
 **DDGP Plus** — Analisador Morfológico e Dicionário Digital de Grego–Português.  
 Versão 2025. Disponível em: https://ddgp-plus.streamlit.app  
-Baseado no Dicionário Digital de Grego-Português (DDGP e DGP), pelo Projeto Letras Clássicas Digitais FCLAr/UNESP .
+Baseado no Dicionário Digital de Grego–Português (DDGP e DGP), pelo Projeto Letras Clássicas Digitais FCLAr/UNESP .
 Licenciado sob **CC BY–NC–ND 4.0**.
-
 """
-
 footer_long = """
 **Créditos e licença (detalhado)**
 
 - Base: Dicionário Digital de Grego–Português (DDGP e DGP), Projeto Letras Clássicas Digitais — FCLAr/UNESP.  
 - Responsável: Anise D'Orange Ferreira.
 - Licença do conteúdo digital: CC BY–NC–ND 4.0.  
-- Créditos aos autores da versão impressa do DGP, coordenadores e instituições conforme rodapé em http://hipatia.fclar.unesp.br.  
+- Créditos aos autores da versião impressa do DGP, coordenadores e instituições conforme rodapé em http://hipatia.fclar.unesp.br.  
 - Desenvolvimento do front-end e integração: equipe de desenvolvimento (registro técnico disponível sob solicitação).
-
 """
-
-# place footer in a container so HTML injection is minimal (no custom CSS)
-st.markdown("---")
 st.markdown(footer_short)
 with st.expander("Créditos e licença (detalhado)"):
     st.markdown(footer_long)
-
-# small copyright note aligned right
 st.markdown("<div style='text-align:right; font-size:0.85em; color:gray;'>© Projeto DDGP — UNESP (digital). CC BY–NC–ND 4.0</div>", unsafe_allow_html=True)

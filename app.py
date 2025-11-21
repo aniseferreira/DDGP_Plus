@@ -35,6 +35,35 @@ if Path("style.css").exists():
 if Path("style_map.css").exists():
     load_css("style_map.css")
 
+# ===== Fonte maior para input e resultados =====
+st.markdown("""
+<style>
+/* Aumenta fonte da instrução */
+.ddgp-input-label {
+    font-size: 24px !important;
+    font-weight: 600;
+}
+
+/* Aumenta fonte geral dos resultados */
+.ddgp-body {
+    font-size: 22px !important;
+    line-height: 1.55;
+}
+
+/* Deixa o markdown exibido maior */
+div.stMarkdown p {
+    font-size: 22px !important;
+    line-height: 1.55;
+}
+
+/* Aumenta fonte da análise morfológica */
+[data-testid="stJson"] {
+    font-size: 20px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # ---------------------------
 # Utilitários Unicode e JSON
 # ---------------------------

@@ -365,28 +365,33 @@ def latin_to_basic_grc(s: str) -> str:
 
 
 # ---------------------------
-# Input dinâmico: ASCII -> GRC (opção A)
+# Input dinâmico: ASCII -> GRC (corrigido)
 # ---------------------------
-# inicializa estado
 if "campo_ascii" not in st.session_state:
     st.session_state["campo_ascii"] = ""
+
 if "campo_grc" not in st.session_state:
     st.session_state["campo_grc"] = ""
 
 def atualizar_grego():
-    txt = st.session_state.get("campo_ascii","")
+    txt = st.session_state.get("campo_ascii", "")
+
+    # Apenas ASCII vira grego — NÃO envia ASCII para a morfologia
     if txt and txt.isascii():
         st.session_state["campo_grc"] = latin_to_basic_grc(txt.lower())
     else:
-        st.session_state["campo_grc"] = txt
+        st.session_state["campo_grc"] = txt  # já está em grego
 
+# Campo digitado pelo usuário
 st.text_input(
-    "Digite forma (legw, ferw, akouw — ou grego diretamente):",
+    "Digite uma forma grega (você pode usar legw, ferw, akouw etc.):",
     key="campo_ascii",
     on_change=atualizar_grego
 )
 
-palavra = st.session_state.get("campo_grc","")
+# Esta é a forma que será usada pela morfologia + DDGP
+palavra = st.session_state["campo_grc"]
+
 
 # ---------------------------
 # Processamento (mantém sua lógica)

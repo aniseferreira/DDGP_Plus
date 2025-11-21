@@ -240,8 +240,15 @@ def _on_change_convert():
         st.session_state["campo_grc"] = txt
 
 # Single visible input: user types (latin or greek) and sees greek
+# Instrução com fonte maior
+st.markdown(
+    '<div id="ddgp-instrucao">Digite (pode usar letras latinas: legw, ferw, akouw — ou grego diretamente sem diacríticos):</div>',
+    unsafe_allow_html=True
+)
+
+# Campo de input sem label visível
 st.text_input(
-    "Digite (pode usar letras latinas: legw, ferw, akouw — ou grego diretamente):",
+    " ",
     key="campo_ascii",
     on_change=_on_change_convert
 )

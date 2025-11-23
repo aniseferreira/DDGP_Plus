@@ -20,13 +20,12 @@ STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style")
 # --- VARIÁVEIS EXTERNAS ---
 LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
 
-# 1. Configuração da Página
+# 1. Configuração da Página, incluindo o FAVICON (Assumindo que favicon.png está em ddgp/)
 st.set_page_config(
     page_title="DDGP + Morfologia Grega",
     layout="centered",
     initial_sidebar_state="collapsed",
-    # Favicon: Use um link externo ou um arquivo na raiz do repositório
-    # icon="random" 
+    icon="ddgp/favicon.png" 
 )
 
 # 2. CARREGAMENTO E INJEÇÃO DOS ESTILOS CSS
@@ -86,12 +85,10 @@ st.markdown(footer_html, unsafe_allow_html=True)
 
 
 # --- Funções de Carregamento de Dados DDGP ---
-
 @st.cache_resource
 def load_ddgp_data():
     """Carrega os dados do DDGP na memória."""
     try:
-        # Carrega todos os arquivos JSON necessários para a aplicação
         with open(os.path.join(DDGP_DATA_DIR, "ddgp3x_entry.json"), "r", encoding="utf-8") as f:
             entries = json.load(f)
         
@@ -103,7 +100,8 @@ def load_ddgp_data():
         
         return entries, lema_index, forma_index
     except FileNotFoundError as e:
-        st.error(f"Erro ao carregar arquivos de dados do DDGP: {e.filename}. Verifique a pasta ddgp/data.")
+        # Aviso de erro para o usuário se um arquivo chave faltar
+        st.error(f"Erro ao carregar arquivos de dados do DDGP: {e.filename}. Verifique a pasta ddgp/data e a extensão .json.")
         return {}, {}, {}
 
 DDGP_ENTRIES, DDGP_LEMA_INDEX, DDGP_FORMA_INDEX = load_ddgp_data()
@@ -137,6 +135,7 @@ if input_text:
     st.markdown('<div class="section-title">🧩 Resultado da Análise Morfológica</div>', unsafe_allow_html=True)
 
     # 2. Análise Morfológica
+    # AQUI ESTÁ O PONTO DE FALHA, que será corrigido no ddgp/morph_simple.py
     morph_result = morph_analyze_simple(greek_word)
 
     st.markdown('<div class="result-box">', unsafe_allow_html=True)
@@ -152,6 +151,8 @@ if input_text:
 
     if lema_candidato and lema_candidato not in ("desconhecido", "none"):
         
+        # AQUI O LEEMA DEVE SER 'φερ' (stem) + 'ω' = φερω OU O LEEMA CORRETO φέρω
+        # O DDGP aceitou 'φερε' porque ele estava no fallback sem acento e sem o ômega.
         ddgp_entry = lookup_ddgp_by_lema(lema_candidato)
 
         if ddgp_entry:
@@ -164,6 +165,7 @@ if input_text:
             
             formatted_translation = format_pdesc(translation)
             
+            # Formatação do dicionário
             st.markdown(f'<h2 style="color: var(--ddgp-azul);">{headword}</h2>', unsafe_allow_html=True)
             st.markdown(f"<p class='abrev'>**Info Gramatical:** {grammar_info}</p>", unsafe_allow_html=True)
             st.markdown(f'<p class="etimo">{formatted_translation}</p>', unsafe_allow_html=True)

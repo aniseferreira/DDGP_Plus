@@ -12,7 +12,7 @@ from ddgp.translit import transliterate_to_greek
 from ddgp.formatting import format_pdesc
 # --------------------------------------
 
-# --- CONFIGURAÇÕES DE CAMINHOS (Mantido próximo aos imports para evitar erros de FileNotFoundError) ---
+# --- CONFIGURAÇÕES DE CAMINHOS ---
 BASE_DIR = os.path.dirname(__file__)
 DDGP_DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
 STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style") 
@@ -20,12 +20,14 @@ STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style")
 # --- VARIÁVEIS EXTERNAS FIXAS ---
 LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
 
-# 1. Configuração da Página (DEVE SER A PRIMEIRA CHAMADA STREAMLIT)
+# 1. Configuração da Página
+# USANDO O ARQUIVO ICO QUE VOCÊ FORNECEU.
+# ASSUMINDO QUE ELE ESTÁ EM ddgp/ddgp.ico
 st.set_page_config(
     page_title="DDGP + Morfologia Grega",
     layout="centered",
     initial_sidebar_state="collapsed",
-    icon="📚" # Opção estável para contornar o TypeError
+    icon="ddgp/ddgp.ico" 
 )
 
 # 2. CARREGAMENTO E INJEÇÃO DOS ESTILOS CSS
@@ -134,7 +136,7 @@ if input_text:
     st.markdown("---")
     st.markdown('<div class="section-title">🧩 Resultado da Análise Morfológica</div>', unsafe_allow_html=True)
 
-    # 2. Análise Morfológica (A LÓGICA DEVE ESTAR CORRETA EM ddgp/morph_simple.py)
+    # 2. Análise Morfológica
     morph_result = morph_analyze_simple(greek_word)
 
     st.markdown('<div class="result-box">', unsafe_allow_html=True)

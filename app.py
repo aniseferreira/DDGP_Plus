@@ -20,12 +20,14 @@ STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style")
 # --- VARIÁVEIS EXTERNAS ---
 LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
 
-# 1. Configuração da Página, incluindo o FAVICON (Assumindo que favicon.png está em ddgp/)
+# app.py
+
+# 1. Configuração da Página, incluindo o FAVICON
 st.set_page_config(
     page_title="DDGP + Morfologia Grega",
     layout="centered",
     initial_sidebar_state="collapsed",
-    icon="ddgp/favicon.png" 
+    icon="📚" # MUDANÇA AQUI: Agora usando um emoji para estabilidade
 )
 
 # 2. CARREGAMENTO E INJEÇÃO DOS ESTILOS CSS

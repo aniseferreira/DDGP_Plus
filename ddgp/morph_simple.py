@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Analisador Morfológico Simplificado para Grego Antigo.
-Ordem de análise corrigida para priorizar Nomes e resolver conflitos como 'παθη'.
+Ordem de análise corrigida (Nomes antes de Verbos) e lógica de lematização.
 """
 
 import os, json, unicodedata, re
@@ -18,10 +18,11 @@ def _load(name):
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
-    print(f"ATENÇÃO: Arquivo de dados não encontrado: {path}")
+    # A página está carregando, então isso é apenas um aviso de debug
+    print(f"ATENÇÃO: Arquivo de dados não encontrado: {path}") 
     return {}
 
-# --- Carregamento das Tabelas (Mantido) ---
+# --- Carregamento das Tabelas ---
 PRES_A = _load("endings_present_active.json") or {}
 PRES_M = _load("endings_present_middle.json") or {}
 IMP_A  = _load("endings_imperfect_active.json") or {}
@@ -42,19 +43,19 @@ ART   = _load("article.json") or {}
 PRON  = _load("pronouns.json") or {}
 NUM   = _load("numerals.json") or {}
 
-# Mapeamento de Stems Irregulares (mantido para verbos, mas agora com prioridade menor)
+# Mapeamento de Stems Irregulares
 IRREGULAR_STEMS = _load("irregular_stems.json") or {}
 
-# --- Dicionários de Tradução (Mantido) ---
+# --- Dicionários de Tradução ---
 POS_MAP    = {"verb":"verbo","noun":"substantivo","adj":"adjetivo","participle":"particípio","unknown":"desconhecido"}
 TENSE_MAP  = {"present":"presente","future":"futuro","aorist":"aoristo","perfect":"perfeito","imperfect":"imperfeito",None:None}
 VOICE_MAP  = {"active":"ativa","middle":"média","passive":"passiva",None:None}
 CASE_MAP   = {"nom":"nominativo","gen":"genitivo","dat":"dativo","acc":"acusativo",None:None}
 GENDER_MAP = {"masc":"masculino","fem":"feminino","neut":"neutro",None:None}
 NUMBER_MAP = {"sg":"singular","pl":"plural",None:None}
-PERSON_MAP = {"1":"1ª","2ª":"2ª","3":"3ª",None:None} 
+PERSON_MAP = {"1":"1ª","2":"2ª","3":"3ª",None:None} 
 
-# --- Funções de Utilidade (Mantido) ---
+# --- Funções de Utilidade ---
 def normalize(t): return unicodedata.normalize("NFC", t or "").strip()
 def strip_diacritics(t): return "".join(ch for ch in unicodedata.normalize("NFD", t or "") if not unicodedata.combining(ch))
 def simplify(t): return strip_diacritics(normalize(t)).lower()
@@ -69,7 +70,7 @@ def match_longest(simpl, endings_dict):
     return best
 
 def info_get(info, key):
-    # ... (lógica info_get mantida) ...
+    # Lógica para extrair informações de dicionários ou strings de código
     if isinstance(info, dict):
         return info.get(key)
     
@@ -98,20 +99,22 @@ def info_get(info, key):
 
     return None
 
-# --- Funções de Reconstrução de Lema (Mantido) ---
+# --- Funções de Reconstrução de Lema ---
 def reconstruct_lemma_verb(stem): 
     """Tenta reconstruir o lema do presente para verbos regulares (stem + ω)."""
+    # Adiciona a terminação -ω e tenta preservar o acento (não é perfeito, mas é um bom palpite)
     return strip_diacritics(stem) + "ω"
 
 def reconstruct_lemma_nominal(stem, info=None):
     """Tenta reconstruir o lema para substantivos/adjetivos."""
     st = strip_diacritics(stem)
-    # Tenta usar a informação de gênero, mas 'os' é o fallback padrão para neutro/masc
+    # Reconstrução simplificada do lema nominal, assumindo o nominativo singular
     if isinstance(info, dict):
         g = info.get("gender")
-        if g == "neut": return st + "ος" # Corrigido para neutro de 3ª Decl.: stem + ος
-        if g == "fem":  return st + "α"
-    return st + "ος" # Fallback
+        # Declinação 2 e 3 neutras geralmente terminam em -ος ou -ον
+        if g == "neut": return st + "ος" 
+        if g == "fem":  return st + "η"
+    return st + "ος" # Fallback (neutro ou masculino)
 
 # --- Função Principal de Análise ---
 def morph_analyze_simple(word):
@@ -153,13 +156,12 @@ def morph_analyze_simple(word):
         out["notas"].append(f"participle_end:{original}")
         return out
 
-    # 3. Nomes e adjetivos (NOVA PRIORIDADE: Nouns/Adjectives agora vêm antes de Verbos)
-    # Ordem: Declinação 3 (mais complexa e relevante para 'παθη'), 2, 1
+    # 3. Nomes e adjetivos (PRIORIDADE ALTA - Resolve casos como 'παθη')
     for nd in (DECL3, DECL2, DECL1): 
         m = match_longest(s, nd)
         if m:
             end_s, info, original = m
-            out["pos"]    = "substantivo" # Pode ser adjetivo, mas o fallback é substantivo
+            out["pos"]    = "substantivo" 
             out["caso"]   = CASE_MAP.get(info.get("case"))
             out["genero"] = GENDER_MAP.get(info.get("gender"))
             out["numero"] = NUMBER_MAP.get(info.get("number"))
@@ -171,7 +173,8 @@ def morph_analyze_simple(word):
             return out
 
 
-    # 4. Verbos (Antigo item 3, agora item 4)
+    # 4. Verbos (PRIORIDADE MAIS BAIXA)
+    # Note a inclusão de IMP_A para capturar formas como 'φερε' (imperativo)
     for pd in [FUT_M, FUT_A, FUT_P, A1_A, A1_M, A1_P, PERF_M, PERF_A, IMP_A, PRES_M, PRES_A]:
         m = match_longest(s, pd)
         if m:
@@ -186,7 +189,7 @@ def morph_analyze_simple(word):
             stem = s[:-len(end_s)] if end_s else s
             stem_s = strip_diacritics(stem)
             
-            # Lógica de lematização com CORREÇÃO para irregulares (mantida)
+            # Lógica de lematização para irregulares
             if stem_s in IRREGULAR_STEMS:
                 out["lema"] = IRREGULAR_STEMS[stem_s]
                 out["notas"].append(f"lema_override:{stem_s}->{out['lema']}")
@@ -196,8 +199,9 @@ def morph_analyze_simple(word):
             out["notas"].append(f"verb_end:{original}")
             return out
 
-    # 5. Fallback para Desconhecido (Mantido)
+    # 5. Fallback para Desconhecido
     out["pos"] = "desconhecido"
-    out["lema"] = strip_diacritics(s)
+    # Fallback: lema é a própria palavra (sem acentos/diacríticos)
+    out["lema"] = strip_diacritics(s) 
     out["notas"].append("fallback")
     return out

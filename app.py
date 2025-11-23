@@ -1,175 +1,203 @@
-# app.py
+# ddgp/morph_simple.py
 # -*- coding: utf-8 -*-
-
-import streamlit as st
-import os
-import json
-import re
-
-# --- IMPORTS CORRIGIDOS E COMPLETOS ---
-from ddgp.morph_simple import morph_analyze_simple 
-from ddgp.translit import transliterate_to_greek
-from ddgp.formatting import format_pdesc
-# --------------------------------------
-
-# --- CONFIGURAÇÕES DE CAMINHOS ---
-BASE_DIR = os.path.dirname(__file__)
-DDGP_DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
-STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style") 
-
-# --- VARIÁVEIS EXTERNAS ---
-LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
-
-# 1. Configuração da Página
-st.set_page_config(
-    page_title="DDGP + Morfologia Grega",
-    layout="centered",
-    initial_sidebar_state="collapsed",
-    # Favicon: Use um link externo ou um arquivo na raiz do repositório
-    # icon="random" 
-)
-
-# 2. CARREGAMENTO E INJEÇÃO DOS ESTILOS CSS
-def load_and_inject_css(filename):
-    """Carrega e injeta um arquivo CSS no Streamlit."""
-    try:
-        css_path = os.path.join(STYLE_DIR, filename)
-        with open(css_path, "r", encoding="utf-8") as f:
-            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-    except FileNotFoundError:
-        st.warning(f"Arquivo de estilo CSS não encontrado: ddgp/style/{filename}.")
-
-load_and_inject_css("style.css")
-load_and_inject_css("style_map.css")
-
-# --- INCLUSÃO DO LOGO NO CORPO DA PÁGINA ---
-st.markdown(f'''
-    <div class="center">
-        <img src="{LOGO_URL}" class="logo-ddgp" alt="DDGP Logo">
-    </div>
-''', unsafe_allow_html=True)
-
-
-# 3. TÍTULO PRINCIPAL e Instruções
-st.markdown(
-    """
-    <h1 style="text-align: center;">📚 DDGP + Análise Morfológica Grega</h1>
-    <p id="ddgp-instrucao">Ferramenta para análise de formas gregas e consulta rápida ao Dicionário de Dupla Gramática do Português (DDGP).</p>
-    """, 
-    unsafe_allow_html=True
-)
-
-# 4. Definição do FOOTER (Com correção de visibilidade)
-footer_html = """
-<style>
-/* Oculta elementos padrão do Streamlit */
-#MainMenu { visibility: hidden; }
-footer { visibility: hidden; }
-
-/* Garante o footer customizado fixo na parte inferior */
-.footer-ddgp {
-    position: fixed; 
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    z-index: 1000;
-    padding: 10px 0;
-    background-color: white; 
-    border-top: 1px solid #e0e0e0;
-}
-</style>
-<div class="footer-ddgp">
-    Desenvolvido para análise de Grego Antigo | Baseado em DDGP | Projeto Acadêmico.
-</div>
 """
-st.markdown(footer_html, unsafe_allow_html=True)
+Analisador Morfológico Simplificado para Grego Antigo.
+Ordem de análise corrigida para priorizar Nomes e resolver conflitos como 'παθη'.
+"""
 
+import os, json, unicodedata, re
 
-# --- Funções de Carregamento de Dados DDGP ---
+# Define o caminho base
+BASE_DIR = os.path.dirname(__file__)
+MORPH_DATA_DIR = os.path.join(BASE_DIR, "data", "morph")
 
-@st.cache_resource
-def load_ddgp_data():
-    """Carrega os dados do DDGP na memória."""
-    try:
-        # Carrega todos os arquivos JSON necessários para a aplicação
-        with open(os.path.join(DDGP_DATA_DIR, "ddgp3x_entry.json"), "r", encoding="utf-8") as f:
-            entries = json.load(f)
+# --- Utilidades de Carregamento ---
+def _load(name):
+    """Carrega um arquivo JSON de dados morfológicos."""
+    path = os.path.join(MORPH_DATA_DIR, name)
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    print(f"ATENÇÃO: Arquivo de dados não encontrado: {path}")
+    return {}
+
+# --- Carregamento das Tabelas (Mantido) ---
+PRES_A = _load("endings_present_active.json") or {}
+PRES_M = _load("endings_present_middle.json") or {}
+IMP_A  = _load("endings_imperfect_active.json") or {}
+FUT_A  = _load("endings_future_active.json") or {}
+FUT_M  = _load("endings_future_middle.json") or {}
+FUT_P  = _load("endings_future_passive.json") or {}
+A1_A   = _load("endings_aorist1_active.json") or {}
+A1_M   = _load("endings_aorist1_middle.json") or {}
+A1_P   = _load("endings_aorist1_passive.json") or {}
+PERF_A = _load("endings_perfect_active.json") or {}
+PERF_M = _load("endings_perfect_middle.json") or {}
+PARTS  = _load("participles.json") or {}
+
+DECL1 = _load("endings_decl1.json") or {}
+DECL2 = _load("endings_decl2.json") or {}
+DECL3 = _load("endings_decl3.json") or {}
+ART   = _load("article.json") or {}
+PRON  = _load("pronouns.json") or {}
+NUM   = _load("numerals.json") or {}
+
+# Mapeamento de Stems Irregulares (mantido para verbos, mas agora com prioridade menor)
+IRREGULAR_STEMS = _load("irregular_stems.json") or {}
+
+# --- Dicionários de Tradução (Mantido) ---
+POS_MAP    = {"verb":"verbo","noun":"substantivo","adj":"adjetivo","participle":"particípio","unknown":"desconhecido"}
+TENSE_MAP  = {"present":"presente","future":"futuro","aorist":"aoristo","perfect":"perfeito","imperfect":"imperfeito",None:None}
+VOICE_MAP  = {"active":"ativa","middle":"média","passive":"passiva",None:None}
+CASE_MAP   = {"nom":"nominativo","gen":"genitivo","dat":"dativo","acc":"acusativo",None:None}
+GENDER_MAP = {"masc":"masculino","fem":"feminino","neut":"neutro",None:None}
+NUMBER_MAP = {"sg":"singular","pl":"plural",None:None}
+PERSON_MAP = {"1":"1ª","2ª":"2ª","3":"3ª",None:None} 
+
+# --- Funções de Utilidade (Mantido) ---
+def normalize(t): return unicodedata.normalize("NFC", t or "").strip()
+def strip_diacritics(t): return "".join(ch for ch in unicodedata.normalize("NFD", t or "") if not unicodedata.combining(ch))
+def simplify(t): return strip_diacritics(normalize(t)).lower()
+
+def match_longest(simpl, endings_dict):
+    best = None
+    for ending, info in endings_dict.items():
+        end_s = simplify(ending)
+        if end_s and simpl.endswith(end_s):
+            if best is None or len(end_s) > len(best[0]):
+                best = (end_s, info, ending)
+    return best
+
+def info_get(info, key):
+    # ... (lógica info_get mantida) ...
+    if isinstance(info, dict):
+        return info.get(key)
+    
+    if isinstance(info, str):
+        code = info
         
-        with open(os.path.join(DDGP_DATA_DIR, "ddgp_index_lemas.json"), "r", encoding="utf-8") as f:
-            lema_index = json.load(f)
+        if key == "tense":
+            if "fut" in code: return "future"
+            if "aor" in code: return "aorist"
+            if "perf" in code: return "perfect"
+            if "imp" in code: return "imperfect"
+            if "pres" in code: return "present"
         
-        with open(os.path.join(DDGP_DATA_DIR, "ddgp_index_formas_final.json"), "r", encoding="utf-8") as f:
-            forma_index = json.load(f)
+        if key == "voice":
+            if "pass" in code: return "passive"
+            if "mid" in code or "med" in code: return "middle"
+            if "act" in code: return "active"
         
-        return entries, lema_index, forma_index
-    except FileNotFoundError as e:
-        st.error(f"Erro ao carregar arquivos de dados do DDGP: {e.filename}. Verifique a pasta ddgp/data.")
-        return {}, {}, {}
+        if key == "person":
+            m = re.search(r"([123])(?:sg|pl)", code)
+            if m: return m.group(1)
 
-DDGP_ENTRIES, DDGP_LEMA_INDEX, DDGP_FORMA_INDEX = load_ddgp_data()
+        if key == "number":
+            if "pl" in code: return "pl"
+            if "sg" in code: return "sg"
 
-
-# --- Funções de Busca ---
-def lookup_ddgp_by_lema(lema):
-    """Busca a entrada DDGP usando o lema fornecido pelo parser."""
-    if lema in DDGP_LEMA_INDEX:
-        ddgp_key = DDGP_LEMA_INDEX[lema]
-        return DDGP_ENTRIES.get(ddgp_key)
     return None
 
-# --- Interface e Lógica Principal ---
+# --- Funções de Reconstrução de Lema (Mantido) ---
+def reconstruct_lemma_verb(stem): 
+    """Tenta reconstruir o lema do presente para verbos regulares (stem + ω)."""
+    return strip_diacritics(stem) + "ω"
 
-st.markdown('<div class="section-title">Insira a Palavra</div>', unsafe_allow_html=True) 
+def reconstruct_lemma_nominal(stem, info=None):
+    """Tenta reconstruir o lema para substantivos/adjetivos."""
+    st = strip_diacritics(stem)
+    # Tenta usar a informação de gênero, mas 'os' é o fallback padrão para neutro/masc
+    if isinstance(info, dict):
+        g = info.get("gender")
+        if g == "neut": return st + "ος" # Corrigido para neutro de 3ª Decl.: stem + ος
+        if g == "fem":  return st + "α"
+    return st + "ος" # Fallback
 
-input_text = st.text_input(
-    "Digite a palavra grega (pode usar letras latinas: legw, ferw, akouw):",
-    key="input_word"
-)
+# --- Função Principal de Análise ---
+def morph_analyze_simple(word):
+    w = normalize(word)
+    s = simplify(w)
 
-# --- Processamento e Exibição ---
+    out = {
+        "entrada": word, "normalizado": w, "simplificado": s,
+        "pos": None, "tempo": None, "voz": None,
+        "pessoa": None, "numero": None,
+        "caso": None, "genero": None,
+        "lema": None, "notas": []
+    }
 
-if input_text:
-    
-    # 1. Transliteração
-    greek_word = transliterate_to_greek(input_text)
+    if not s:
+        return out
 
-    st.markdown("---")
-    st.markdown('<div class="section-title">🧩 Resultado da Análise Morfológica</div>', unsafe_allow_html=True)
+    # 1. Artigos / pronomes / numerais (Lookup exato)
+    for d in (ART, PRON, NUM):
+        for form, info in d.items():
+            if simplify(form) == s:
+                out["pos"]    = POS_MAP.get(info.get("pos","noun"))
+                out["caso"]   = CASE_MAP.get(info.get("case"))
+                out["genero"] = GENDER_MAP.get(info.get("gender"))
+                out["numero"] = NUMBER_MAP.get(info.get("number"))
+                out["lema"]   = info.get("lemma", form)
+                out["notas"].append("lookup_exato")
+                return out
 
-    # 2. Análise Morfológica
-    morph_result = morph_analyze_simple(greek_word)
+    # 2. Particípio
+    part = match_longest(s, PARTS)
+    if part:
+        end_s, info, original = part
+        out["pos"] = "particípio"
+        out["tempo"] = TENSE_MAP.get(info_get(info, "tense"))
+        out["voz"]   = VOICE_MAP.get(info_get(info, "voice"))
+        stem = s[:-len(end_s)] if end_s else s
+        out["lema"] = reconstruct_lemma_nominal(stem) 
+        out["notas"].append(f"participle_end:{original}")
+        return out
 
-    st.markdown('<div class="result-box">', unsafe_allow_html=True)
-    st.json(morph_result)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-    # 3. Busca no DDGP 
-    lema_candidato = morph_result.get("lema")
-
-    st.markdown("---")
-    st.markdown('<div class="section-title">📘 Lookup do DDGP</div>', unsafe_allow_html=True)
-
-    if lema_candidato and lema_candidato not in ("desconhecido", "none"):
-        
-        ddgp_entry = lookup_ddgp_by_lema(lema_candidato)
-
-        if ddgp_entry:
-            st.success(f"Entrada DDGP encontrada para o lema: **{lema_candidato}**")
+    # 3. Nomes e adjetivos (NOVA PRIORIDADE: Nouns/Adjectives agora vêm antes de Verbos)
+    # Ordem: Declinação 3 (mais complexa e relevante para 'παθη'), 2, 1
+    for nd in (DECL3, DECL2, DECL1): 
+        m = match_longest(s, nd)
+        if m:
+            end_s, info, original = m
+            out["pos"]    = "substantivo" # Pode ser adjetivo, mas o fallback é substantivo
+            out["caso"]   = CASE_MAP.get(info.get("case"))
+            out["genero"] = GENDER_MAP.get(info.get("gender"))
+            out["numero"] = NUMBER_MAP.get(info.get("number"))
             
-            # Aplicação da Formatação (format_pdesc)
-            headword = ddgp_entry.get('headword', lema_candidato)
-            grammar_info = ddgp_entry.get('grammar_info', 'N/A')
-            translation = ddgp_entry.get('translation', 'N/A')
+            # Reconstrução do lema nominal
+            stem = s[:-len(end_s)] if end_s else s
+            out["lema"] = reconstruct_lemma_nominal(stem, info)
+            out["notas"].append(f"declension_end:{original}")
+            return out
+
+
+    # 4. Verbos (Antigo item 3, agora item 4)
+    for pd in [FUT_M, FUT_A, FUT_P, A1_A, A1_M, A1_P, PERF_M, PERF_A, IMP_A, PRES_M, PRES_A]:
+        m = match_longest(s, pd)
+        if m:
+            end_s, info, original = m
+            out["pos"]    = "verbo"
+            out["tempo"] = TENSE_MAP.get(info_get(info, "tense"))
+            out["voz"]    = VOICE_MAP.get(info_get(info, "voice"))
+            out["pessoa"] = PERSON_MAP.get(info_get(info, "person"))
+            out["numero"] = NUMBER_MAP.get(info_get(info, "number"))
             
-            formatted_translation = format_pdesc(translation)
+            # Cálculo do Stem
+            stem = s[:-len(end_s)] if end_s else s
+            stem_s = strip_diacritics(stem)
             
-            st.markdown(f'<h2 style="color: var(--ddgp-azul);">{headword}</h2>', unsafe_allow_html=True)
-            st.markdown(f"<p class='abrev'>**Info Gramatical:** {grammar_info}</p>", unsafe_allow_html=True)
-            st.markdown(f'<p class="etimo">{formatted_translation}</p>', unsafe_allow_html=True)
+            # Lógica de lematização com CORREÇÃO para irregulares (mantida)
+            if stem_s in IRREGULAR_STEMS:
+                out["lema"] = IRREGULAR_STEMS[stem_s]
+                out["notas"].append(f"lema_override:{stem_s}->{out['lema']}")
+            else:
+                out["lema"] = reconstruct_lemma_verb(stem)
             
-        else:
-            st.warning(f"Nenhuma entrada encontrada no índice para o lema candidato: **{lema_candidato}**")
-            st.info("Nenhuma entrada do DDGP encontrada para a(s) forma(s) ou lema(s) candidatos.")
-    else:
-        st.info("A análise morfológica não identificou um lema válido para pesquisa no DDGP.")
+            out["notas"].append(f"verb_end:{original}")
+            return out
+
+    # 5. Fallback para Desconhecido (Mantido)
+    out["pos"] = "desconhecido"
+    out["lema"] = strip_diacritics(s)
+    out["notas"].append("fallback")
+    return out

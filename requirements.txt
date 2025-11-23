@@ -4,3 +4,5 @@ regex
 unicodedata2
 tqdm
 pytest
+transformers
+torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu

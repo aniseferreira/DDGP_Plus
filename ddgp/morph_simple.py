@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Analisador Morfológico Simplificado para Grego Antigo.
-Ordem de análise corrigida (Nomes antes de Verbos) e lógica de lematização.
+Prioridade corrigida: Verbos antes de Nomes para resolver a ambiguidade de -ω.
 """
 
 import os, json, unicodedata, re
@@ -18,7 +18,6 @@ def _load(name):
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
-    # A página está carregando, então isso é apenas um aviso de debug
     print(f"ATENÇÃO: Arquivo de dados não encontrado: {path}") 
     return {}
 
@@ -102,19 +101,18 @@ def info_get(info, key):
 # --- Funções de Reconstrução de Lema ---
 def reconstruct_lemma_verb(stem): 
     """Tenta reconstruir o lema do presente para verbos regulares (stem + ω)."""
-    # Adiciona a terminação -ω e tenta preservar o acento (não é perfeito, mas é um bom palpite)
+    # A reconstrução deve ser sem acento para corresponder ao formato da chave do DDGP
     return strip_diacritics(stem) + "ω"
 
 def reconstruct_lemma_nominal(stem, info=None):
     """Tenta reconstruir o lema para substantivos/adjetivos."""
     st = strip_diacritics(stem)
-    # Reconstrução simplificada do lema nominal, assumindo o nominativo singular
+    # A reconstrução deve ser sem acento
     if isinstance(info, dict):
         g = info.get("gender")
-        # Declinação 2 e 3 neutras geralmente terminam em -ος ou -ον
         if g == "neut": return st + "ος" 
         if g == "fem":  return st + "η"
-    return st + "ος" # Fallback (neutro ou masculino)
+    return st + "ος" 
 
 # --- Função Principal de Análise ---
 def morph_analyze_simple(word):
@@ -156,7 +154,33 @@ def morph_analyze_simple(word):
         out["notas"].append(f"participle_end:{original}")
         return out
 
-    # 3. Nomes e adjetivos (PRIORIDADE ALTA - Resolve casos como 'παθη')
+    # 3. Verbos (NOVA PRIORIDADE: Tratando as desinências verbais comuns primeiro, como -ω)
+    for pd in [PRES_A, PRES_M, IMP_A, FUT_M, FUT_A, FUT_P, A1_A, A1_M, A1_P, PERF_M, PERF_A]:
+        m = match_longest(s, pd)
+        if m:
+            end_s, info, original = m
+            out["pos"]    = "verbo"
+            out["tempo"] = TENSE_MAP.get(info_get(info, "tense"))
+            out["voz"]    = VOICE_MAP.get(info_get(info, "voice"))
+            out["pessoa"] = PERSON_MAP.get(info_get(info, "person"))
+            out["numero"] = NUMBER_MAP.get(info_get(info, "number"))
+            
+            # Cálculo do Stem
+            stem = s[:-len(end_s)] if end_s else s
+            stem_s = strip_diacritics(stem)
+            
+            # Lógica de lematização com CORREÇÃO para irregulares (inclui φερ)
+            if stem_s in IRREGULAR_STEMS:
+                out["lema"] = IRREGULAR_STEMS[stem_s]
+                out["notas"].append(f"lema_override:{stem_s}->{out['lema']}")
+            else:
+                out["lema"] = reconstruct_lemma_verb(stem)
+            
+            out["notas"].append(f"verb_end:{original}")
+            return out
+
+
+    # 4. Nomes e adjetivos (PRIORIDADE BAIXA - Só se não for casado como verbo)
     for nd in (DECL3, DECL2, DECL1): 
         m = match_longest(s, nd)
         if m:
@@ -172,36 +196,8 @@ def morph_analyze_simple(word):
             out["notas"].append(f"declension_end:{original}")
             return out
 
-
-    # 4. Verbos (PRIORIDADE MAIS BAIXA)
-    # Note a inclusão de IMP_A para capturar formas como 'φερε' (imperativo)
-    for pd in [FUT_M, FUT_A, FUT_P, A1_A, A1_M, A1_P, PERF_M, PERF_A, IMP_A, PRES_M, PRES_A]:
-        m = match_longest(s, pd)
-        if m:
-            end_s, info, original = m
-            out["pos"]    = "verbo"
-            out["tempo"] = TENSE_MAP.get(info_get(info, "tense"))
-            out["voz"]    = VOICE_MAP.get(info_get(info, "voice"))
-            out["pessoa"] = PERSON_MAP.get(info_get(info, "person"))
-            out["numero"] = NUMBER_MAP.get(info_get(info, "number"))
-            
-            # Cálculo do Stem
-            stem = s[:-len(end_s)] if end_s else s
-            stem_s = strip_diacritics(stem)
-            
-            # Lógica de lematização para irregulares
-            if stem_s in IRREGULAR_STEMS:
-                out["lema"] = IRREGULAR_STEMS[stem_s]
-                out["notas"].append(f"lema_override:{stem_s}->{out['lema']}")
-            else:
-                out["lema"] = reconstruct_lemma_verb(stem)
-            
-            out["notas"].append(f"verb_end:{original}")
-            return out
-
     # 5. Fallback para Desconhecido
     out["pos"] = "desconhecido"
-    # Fallback: lema é a própria palavra (sem acentos/diacríticos)
     out["lema"] = strip_diacritics(s) 
     out["notas"].append("fallback")
     return out

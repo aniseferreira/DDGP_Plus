@@ -279,11 +279,22 @@ if palavra:
 
     # 3) If morph available, analyze and try to get lemma
     morph_result = None
-    if MORPH_AVAILABLE:
+
+    # Import HF analyzer (optional, parallel)
+    from ddgp.morph_morpheus import morph_hf_analyze, morph_hf_available
+
+    # 1) HF opcional — só se o modelo HF estiver disponível
+    if morph_hf_available():
+        try:
+            morph_result = morph_hf_analyze(palavra)
+        except Exception:
+            morph_result = None
+
+    # 2) determinístico — se HF não existir ou falhar
+    if morph_result is None and MORPH_AVAILABLE:
         try:
             morph_result = morph_analyze_simple(palavra)
-        except Exception as e:
-            st.error(f"Erro na análise morfológica: {e}")
+        except Exception:
             morph_result = None
 
     # Show morph result

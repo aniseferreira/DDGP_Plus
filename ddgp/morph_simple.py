@@ -101,7 +101,7 @@ def info_get(info, key):
 # --- Funções de Reconstrução de Lema ---
 def reconstruct_lemma_verb(stem): 
     """Tenta reconstruir o lema do presente para verbos regulares (stem + ω)."""
-    # A reconstrução deve ser sem acento para corresponder ao formato da chave do DDGP
+    # A reconstrução deve ser sem acento (strip_diacritics) para corresponder à chave do DDGP
     return strip_diacritics(stem) + "ω"
 
 def reconstruct_lemma_nominal(stem, info=None):
@@ -154,7 +154,7 @@ def morph_analyze_simple(word):
         out["notas"].append(f"participle_end:{original}")
         return out
 
-    # 3. Verbos (NOVA PRIORIDADE: Tratando as desinências verbais comuns primeiro, como -ω)
+    # 3. Verbos (PRIORIDADE ALTA: Corrigindo 'φερω' e outras formas verbais ambíguas)
     for pd in [PRES_A, PRES_M, IMP_A, FUT_M, FUT_A, FUT_P, A1_A, A1_M, A1_P, PERF_M, PERF_A]:
         m = match_longest(s, pd)
         if m:
@@ -169,7 +169,7 @@ def morph_analyze_simple(word):
             stem = s[:-len(end_s)] if end_s else s
             stem_s = strip_diacritics(stem)
             
-            # Lógica de lematização com CORREÇÃO para irregulares (inclui φερ)
+            # Lógica de lematização com CORREÇÃO para irregulares
             if stem_s in IRREGULAR_STEMS:
                 out["lema"] = IRREGULAR_STEMS[stem_s]
                 out["notas"].append(f"lema_override:{stem_s}->{out['lema']}")
@@ -180,7 +180,7 @@ def morph_analyze_simple(word):
             return out
 
 
-    # 4. Nomes e adjetivos (PRIORIDADE BAIXA - Só se não for casado como verbo)
+    # 4. Nomes e adjetivos (PRIORIDADE BAIXA: Resolve 'παθη' após falhar como verbo)
     for nd in (DECL3, DECL2, DECL1): 
         m = match_longest(s, nd)
         if m:

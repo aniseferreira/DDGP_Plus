@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Analisador Morfológico Simplificado para Grego Antigo.
-Inclui lógica para lematização de verbos irregulares.
+Ordem de análise corrigida para priorizar Nomes e resolver conflitos como 'παθη'.
 """
 
 import os, json, unicodedata, re
@@ -15,14 +15,13 @@ MORPH_DATA_DIR = os.path.join(BASE_DIR, "data", "morph")
 def _load(name):
     """Carrega um arquivo JSON de dados morfológicos."""
     path = os.path.join(MORPH_DATA_DIR, name)
-    # ATENÇÃO: Verifique se todos os arquivos .json existem
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     print(f"ATENÇÃO: Arquivo de dados não encontrado: {path}")
     return {}
 
-# --- Carregamento das Tabelas (As suas originais) ---
+# --- Carregamento das Tabelas (Mantido) ---
 PRES_A = _load("endings_present_active.json") or {}
 PRES_M = _load("endings_present_middle.json") or {}
 IMP_A  = _load("endings_imperfect_active.json") or {}
@@ -43,20 +42,19 @@ ART   = _load("article.json") or {}
 PRON  = _load("pronouns.json") or {}
 NUM   = _load("numerals.json") or {}
 
-# --- NOVO: Mapeamento de Stems Irregulares ---
-# Este arquivo é crucial para corrigir 'παθη' e outros verbos irregulares.
+# Mapeamento de Stems Irregulares (mantido para verbos, mas agora com prioridade menor)
 IRREGULAR_STEMS = _load("irregular_stems.json") or {}
 
-# --- Dicionários de Tradução ---
+# --- Dicionários de Tradução (Mantido) ---
 POS_MAP    = {"verb":"verbo","noun":"substantivo","adj":"adjetivo","participle":"particípio","unknown":"desconhecido"}
 TENSE_MAP  = {"present":"presente","future":"futuro","aorist":"aoristo","perfect":"perfeito","imperfect":"imperfeito",None:None}
 VOICE_MAP  = {"active":"ativa","middle":"média","passive":"passiva",None:None}
 CASE_MAP   = {"nom":"nominativo","gen":"genitivo","dat":"dativo","acc":"acusativo",None:None}
 GENDER_MAP = {"masc":"masculino","fem":"feminino","neut":"neutro",None:None}
 NUMBER_MAP = {"sg":"singular","pl":"plural",None:None}
-PERSON_MAP = {"1":"1ª","2ª":"2ª","3":"3ª",None:None} # Corrigi a chave '2ª' para '2'
+PERSON_MAP = {"1":"1ª","2ª":"2ª","3":"3ª",None:None} 
 
-# --- Funções de Utilidade ---
+# --- Funções de Utilidade (Mantido) ---
 def normalize(t): return unicodedata.normalize("NFC", t or "").strip()
 def strip_diacritics(t): return "".join(ch for ch in unicodedata.normalize("NFD", t or "") if not unicodedata.combining(ch))
 def simplify(t): return strip_diacritics(normalize(t)).lower()
@@ -71,11 +69,10 @@ def match_longest(simpl, endings_dict):
     return best
 
 def info_get(info, key):
-    """Aceita dict OU string ('1sg_fut_act')."""
+    # ... (lógica info_get mantida) ...
     if isinstance(info, dict):
         return info.get(key)
     
-    # Lógica para extrair informação de uma string de código (ex: '3sg_aor_pass')
     if isinstance(info, str):
         code = info
         
@@ -101,7 +98,7 @@ def info_get(info, key):
 
     return None
 
-# --- Funções de Reconstrução de Lema ---
+# --- Funções de Reconstrução de Lema (Mantido) ---
 def reconstruct_lemma_verb(stem): 
     """Tenta reconstruir o lema do presente para verbos regulares (stem + ω)."""
     return strip_diacritics(stem) + "ω"
@@ -109,12 +106,12 @@ def reconstruct_lemma_verb(stem):
 def reconstruct_lemma_nominal(stem, info=None):
     """Tenta reconstruir o lema para substantivos/adjetivos."""
     st = strip_diacritics(stem)
+    # Tenta usar a informação de gênero, mas 'os' é o fallback padrão para neutro/masc
     if isinstance(info, dict):
         g = info.get("gender")
-        if g == "neut": return st + "ον"
+        if g == "neut": return st + "ος" # Corrigido para neutro de 3ª Decl.: stem + ος
         if g == "fem":  return st + "α"
-    return st + "ος"
-
+    return st + "ος" # Fallback
 
 # --- Função Principal de Análise ---
 def morph_analyze_simple(word):
@@ -152,12 +149,29 @@ def morph_analyze_simple(word):
         out["tempo"] = TENSE_MAP.get(info_get(info, "tense"))
         out["voz"]   = VOICE_MAP.get(info_get(info, "voice"))
         stem = s[:-len(end_s)] if end_s else s
-        out["lema"] = reconstruct_lemma_nominal(stem) # Particípios lematizam como nominal
+        out["lema"] = reconstruct_lemma_nominal(stem) 
         out["notas"].append(f"participle_end:{original}")
         return out
 
-    # 3. Verbos (Onde estava o problema)
-    # A ordem de busca é importante (Aoristo/Futuro primeiro)
+    # 3. Nomes e adjetivos (NOVA PRIORIDADE: Nouns/Adjectives agora vêm antes de Verbos)
+    # Ordem: Declinação 3 (mais complexa e relevante para 'παθη'), 2, 1
+    for nd in (DECL3, DECL2, DECL1): 
+        m = match_longest(s, nd)
+        if m:
+            end_s, info, original = m
+            out["pos"]    = "substantivo" # Pode ser adjetivo, mas o fallback é substantivo
+            out["caso"]   = CASE_MAP.get(info.get("case"))
+            out["genero"] = GENDER_MAP.get(info.get("gender"))
+            out["numero"] = NUMBER_MAP.get(info.get("number"))
+            
+            # Reconstrução do lema nominal
+            stem = s[:-len(end_s)] if end_s else s
+            out["lema"] = reconstruct_lemma_nominal(stem, info)
+            out["notas"].append(f"declension_end:{original}")
+            return out
+
+
+    # 4. Verbos (Antigo item 3, agora item 4)
     for pd in [FUT_M, FUT_A, FUT_P, A1_A, A1_M, A1_P, PERF_M, PERF_A, IMP_A, PRES_M, PRES_A]:
         m = match_longest(s, pd)
         if m:
@@ -172,33 +186,17 @@ def morph_analyze_simple(word):
             stem = s[:-len(end_s)] if end_s else s
             stem_s = strip_diacritics(stem)
             
-            # Lógica de lematização com CORREÇÃO para irregulares
+            # Lógica de lematização com CORREÇÃO para irregulares (mantida)
             if stem_s in IRREGULAR_STEMS:
-                # Usa o mapeamento irregular (ex: 'παθ' -> 'πάσχω')
                 out["lema"] = IRREGULAR_STEMS[stem_s]
                 out["notas"].append(f"lema_override:{stem_s}->{out['lema']}")
             else:
-                # Fallback para a lógica padrão (stem + ω)
                 out["lema"] = reconstruct_lemma_verb(stem)
             
             out["notas"].append(f"verb_end:{original}")
             return out
 
-    # 4. Nomes e adjetivos
-    for nd in (DECL2, DECL1, DECL3):
-        m = match_longest(s, nd)
-        if m:
-            end_s, info, original = m
-            out["pos"]    = "substantivo" # Pode ser adjetivo, mas o fallback é substantivo
-            out["caso"]   = CASE_MAP.get(info.get("case"))
-            out["genero"] = GENDER_MAP.get(info.get("gender"))
-            out["numero"] = NUMBER_MAP.get(info.get("number"))
-            stem = s[:-len(end_s)] if end_s else s
-            out["lema"] = reconstruct_lemma_nominal(stem, info)
-            out["notas"].append(f"declension_end:{original}")
-            return out
-
-    # 5. Fallback para Desconhecido
+    # 5. Fallback para Desconhecido (Mantido)
     out["pos"] = "desconhecido"
     out["lema"] = strip_diacritics(s)
     out["notas"].append("fallback")

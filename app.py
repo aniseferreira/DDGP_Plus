@@ -6,11 +6,16 @@ import os
 import json
 import re
 
-# --- IMPORTS CORRIGIDOS E COMPLETOS (Mantido) ---
+# --- IMPORTS CORRIGIDOS E COMPLETOS ---
 from ddgp.morph_simple import morph_analyze_simple 
 from ddgp.translit import transliterate_to_greek
 from ddgp.formatting import format_pdesc
-# -----------------------------------------------
+# --------------------------------------
+
+# --- CONFIGURAÇÕES DE CAMINHOS (Mantido próximo aos imports para evitar erros de FileNotFoundError) ---
+BASE_DIR = os.path.dirname(__file__)
+DDGP_DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
+STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style") 
 
 # --- VARIÁVEIS EXTERNAS FIXAS ---
 LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
@@ -20,14 +25,8 @@ st.set_page_config(
     page_title="DDGP + Morfologia Grega",
     layout="centered",
     initial_sidebar_state="collapsed",
-    icon="📚" # Emoji estável
+    icon="📚" # Opção estável para contornar o TypeError
 )
-
-# --- CONFIGURAÇÕES DE CAMINHOS (Movido para depois do set_page_config) ---
-BASE_DIR = os.path.dirname(__file__)
-DDGP_DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
-STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style") 
-# ------------------------------------------------------------------------
 
 # 2. CARREGAMENTO E INJEÇÃO DOS ESTILOS CSS
 def load_and_inject_css(filename):
@@ -35,22 +34,12 @@ def load_and_inject_css(filename):
     try:
         css_path = os.path.join(STYLE_DIR, filename)
         with open(css_path, "r", encoding="utf-8") as f:
-            # O st.markdown é a primeira chamada Streamlit APÓS st.set_page_config
             st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True) 
     except FileNotFoundError:
         st.warning(f"Arquivo de estilo CSS não encontrado: ddgp/style/{filename}.")
 
 load_and_inject_css("style.css")
 load_and_inject_css("style_map.css")
-
-# --- INCLUSÃO DO LOGO NO CORPO DA PÁGINA ---
-st.markdown(f'''
-    <div class="center">
-        <img src="{LOGO_URL}" class="logo-ddgp" alt="DDGP Logo">
-    </div>
-''', unsafe_allow_html=True)
-
-# ... O RESTANTE DO CÓDIGO PERMANECE IGUAL ...
 
 # --- INCLUSÃO DO LOGO NO CORPO DA PÁGINA ---
 st.markdown(f'''
@@ -96,6 +85,7 @@ st.markdown(footer_html, unsafe_allow_html=True)
 
 
 # --- Funções de Carregamento de Dados DDGP ---
+
 @st.cache_resource
 def load_ddgp_data():
     """Carrega os dados do DDGP na memória."""
@@ -111,7 +101,6 @@ def load_ddgp_data():
         
         return entries, lema_index, forma_index
     except FileNotFoundError as e:
-        # Aviso de erro para o usuário se um arquivo chave faltar
         st.error(f"Erro ao carregar arquivos de dados do DDGP: {e.filename}. Verifique a pasta ddgp/data e a extensão .json.")
         return {}, {}, {}
 
@@ -145,8 +134,7 @@ if input_text:
     st.markdown("---")
     st.markdown('<div class="section-title">🧩 Resultado da Análise Morfológica</div>', unsafe_allow_html=True)
 
-    # 2. Análise Morfológica
-    # AQUI ESTÁ O PONTO DE FALHA, que será corrigido no ddgp/morph_simple.py
+    # 2. Análise Morfológica (A LÓGICA DEVE ESTAR CORRETA EM ddgp/morph_simple.py)
     morph_result = morph_analyze_simple(greek_word)
 
     st.markdown('<div class="result-box">', unsafe_allow_html=True)
@@ -162,8 +150,6 @@ if input_text:
 
     if lema_candidato and lema_candidato not in ("desconhecido", "none"):
         
-        # AQUI O LEEMA DEVE SER 'φερ' (stem) + 'ω' = φερω OU O LEEMA CORRETO φέρω
-        # O DDGP aceitou 'φερε' porque ele estava no fallback sem acento e sem o ômega.
         ddgp_entry = lookup_ddgp_by_lema(lema_candidato)
 
         if ddgp_entry:
@@ -176,7 +162,6 @@ if input_text:
             
             formatted_translation = format_pdesc(translation)
             
-            # Formatação do dicionário
             st.markdown(f'<h2 style="color: var(--ddgp-azul);">{headword}</h2>', unsafe_allow_html=True)
             st.markdown(f"<p class='abrev'>**Info Gramatical:** {grammar_info}</p>", unsafe_allow_html=True)
             st.markdown(f'<p class="etimo">{formatted_translation}</p>', unsafe_allow_html=True)

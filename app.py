@@ -8,6 +8,9 @@ import re
 from pathlib import Path
 import streamlit as st
 
+from ddgp.translit import transliterate_to_greek
+from ddgp.formatting import format_pdesc
+
 # configure page (title + favicon)
 LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
 LOGO_LOCAL = None

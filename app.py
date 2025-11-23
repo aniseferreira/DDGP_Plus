@@ -6,29 +6,28 @@ import os
 import json
 import re
 
-# --- IMPORTS CORRIGIDOS E COMPLETOS ---
+# --- IMPORTS CORRIGIDOS E COMPLETOS (Mantido) ---
 from ddgp.morph_simple import morph_analyze_simple 
 from ddgp.translit import transliterate_to_greek
 from ddgp.formatting import format_pdesc
-# --------------------------------------
+# -----------------------------------------------
 
-# --- CONFIGURAÇÕES DE CAMINHOS ---
-BASE_DIR = os.path.dirname(__file__)
-DDGP_DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
-STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style") 
-
-# --- VARIÁVEIS EXTERNAS ---
+# --- VARIÁVEIS EXTERNAS FIXAS ---
 LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
 
-# app.py
-
-# 1. Configuração da Página, incluindo o FAVICON
+# 1. Configuração da Página (DEVE SER A PRIMEIRA CHAMADA STREAMLIT)
 st.set_page_config(
     page_title="DDGP + Morfologia Grega",
     layout="centered",
     initial_sidebar_state="collapsed",
-    icon="📚" # MUDANÇA AQUI: Agora usando um emoji para estabilidade
+    icon="📚" # Emoji estável
 )
+
+# --- CONFIGURAÇÕES DE CAMINHOS (Movido para depois do set_page_config) ---
+BASE_DIR = os.path.dirname(__file__)
+DDGP_DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
+STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style") 
+# ------------------------------------------------------------------------
 
 # 2. CARREGAMENTO E INJEÇÃO DOS ESTILOS CSS
 def load_and_inject_css(filename):
@@ -36,12 +35,22 @@ def load_and_inject_css(filename):
     try:
         css_path = os.path.join(STYLE_DIR, filename)
         with open(css_path, "r", encoding="utf-8") as f:
-            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+            # O st.markdown é a primeira chamada Streamlit APÓS st.set_page_config
+            st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True) 
     except FileNotFoundError:
         st.warning(f"Arquivo de estilo CSS não encontrado: ddgp/style/{filename}.")
 
 load_and_inject_css("style.css")
 load_and_inject_css("style_map.css")
+
+# --- INCLUSÃO DO LOGO NO CORPO DA PÁGINA ---
+st.markdown(f'''
+    <div class="center">
+        <img src="{LOGO_URL}" class="logo-ddgp" alt="DDGP Logo">
+    </div>
+''', unsafe_allow_html=True)
+
+# ... O RESTANTE DO CÓDIGO PERMANECE IGUAL ...
 
 # --- INCLUSÃO DO LOGO NO CORPO DA PÁGINA ---
 st.markdown(f'''

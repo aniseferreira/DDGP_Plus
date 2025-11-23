@@ -20,14 +20,12 @@ STYLE_DIR = os.path.join(BASE_DIR, "ddgp", "style")
 # --- VARIÁVEIS EXTERNAS FIXAS ---
 LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
 
-# 1. Configuração da Página
-# USANDO O ARQUIVO ICO QUE VOCÊ FORNECEU.
-# ASSUMINDO QUE ELE ESTÁ EM ddgp/ddgp.ico
+# 1. Configuração da Página (REMOVIDO O ARGUMENTO 'icon' para resolver o TypeError)
 st.set_page_config(
     page_title="DDGP + Morfologia Grega",
     layout="centered",
-    initial_sidebar_state="collapsed",
-    icon="ddgp/ddgp.ico" 
+    initial_sidebar_state="collapsed"
+    # icon=... REMOVIDO
 )
 
 # 2. CARREGAMENTO E INJEÇÃO DOS ESTILOS CSS

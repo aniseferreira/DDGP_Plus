@@ -14,6 +14,26 @@ LOGO_LOCAL = None
 st.set_page_config(page_title="DDGP Plus — Morph & Dictionary", page_icon=LOGO_URL, layout="wide")
 
 # ---------------------------
+# Carregar Alpheios embed
+# ---------------------------
+import streamlit as st
+import streamlit.components.v1 as components
+from pathlib import Path
+
+
+def load_html(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+html_path = Path("ddgp/assets/alpheios_embed.html")
+
+if html_path.exists():
+    components.html(load_html(html_path), height=600, scrolling=True)
+else:
+    st.error("Arquivo alpheios_embed.html não encontrado.")
+
+
+# ---------------------------
 # Carregar CSS customizado
 # ---------------------------
 def load_css(file_name: str):

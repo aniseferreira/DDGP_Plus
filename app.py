@@ -362,7 +362,7 @@ if palavra:
 st.markdown("---")
 footer_short = """
 **DDGP Plus** — Analisador Morfológica e Dicionário Digital de Grego–Português.  
-Versão 2025. Disponível em: https://ddgp-plus.streamlit.app  
+Versão 2025. Disponível em: https://ddgp-plus-morpho.streamlit.app  
 Baseado no Dicionário Digital de Grego–Português (DDGP e DGP), pelo Projeto Letras Clássicas Digitais FCLAr/UNESP .
 Licenciado sob **CC BY–NC–ND 4.0**.
 """

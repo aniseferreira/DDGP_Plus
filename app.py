@@ -69,14 +69,14 @@ def load_json_safe(path):
 # Carregar dados DDGP e abreviaturas
 # ---------------------------
 BASE_DIR = os.path.dirname(__file__)
-DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data", "morph")
+DATA_DIR = os.path.join(BASE_DIR, "ddgp", "data")
 
 DDGP_ENTRY = load_json_safe(os.path.join(DATA_DIR, "ddgp3x_entry.json")) or {}
 DDGP_INDEX_LEMAS = load_json_safe(os.path.join(DATA_DIR, "ddgp_index_lemas.json")) or {}
 DDGP_INDEX_FORMAS = load_json_safe(os.path.join(DATA_DIR, "ddgp_index_formas_final.json")) or {}
 DDGP_FORMA_TO_LEMA = load_json_safe(os.path.join(DATA_DIR, "ddgp_forma_to_lema.json")) or {}
 
-ABREV_PATHS = [os.path.join(DATA_DIR, "abrev.json"), "ddgp/abrev.json", "abrev.json", "/mnt/data/abrev.json", "ddgp/data/morph/abrev.json", "mnt/data/morph/abrev.json"]
+ABREV_PATHS = [os.path.join(DATA_DIR, "abrev.json"), "ddgp/abrev.json", "abrev.json", "/mnt/data/abrev.json"]
 ABREV = {}
 for p in ABREV_PATHS:
     try:

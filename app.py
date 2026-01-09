@@ -210,4 +210,7 @@ with col_ddgp:
     st.subheader("📘 Resultados do DDGP")
 
     if ddgp_query:
-        norm_ddgp = normalize_input(ddgp_query)_
+        norm_ddgp = normalize_input(ddgp_query)
+        
+
+

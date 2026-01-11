@@ -102,10 +102,39 @@ wic_sentence = st.text_input(
 )
 
 if wic_sentence:
-    st.info(
-        "A análise morfológica em contexto está preparada para uso futuro "
-        "(pipeline UD). O DDGP abaixo funciona independentemente."
-    )
+    st.subheader("🧩 Análise morfológica em contexto")
+
+    # tokenização simples (grego: separação por espaços)
+    tokens = [t for t in wic_sentence.split() if t.strip()]
+
+    if not tokens:
+        st.warning("Não foi possível identificar palavras na frase.")
+    else:
+        # estratégia simples: analisar o PRIMEIRO token não trivial
+        target = tokens[0]
+
+        st.caption(f"Forma analisada (WIC): **{target}**")
+
+        morph_result = None
+        if MORPH_AVAILABLE:
+            try:
+                morph_result = morph_analyze_simple(target)
+            except Exception as e:
+                morph_result = None
+
+        if morph_result:
+            st.json(morph_result)
+
+            # se houver lema, oferecer consulta direta ao DDGP
+            lema = morph_result.get("lema")
+            if lema:
+                if st.button(f"🔎 Consultar lema no DDGP: {lema}"):
+                    st.session_state["campo_ascii"] = lema
+        else:
+            st.warning(
+                "Análise morfológica indisponível para esta forma em contexto."
+            )
+
 
 st.markdown("---")
 

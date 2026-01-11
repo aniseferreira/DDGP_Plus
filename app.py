@@ -107,7 +107,7 @@ if wic_sentence:
     # tokenização simples (grego: separação por espaços)
     tokens = [t for t in wic_sentence.split() if t.strip()]
 
-    if not tokens:
+if not tokens:
         st.warning("Não foi possível identificar palavras na frase.")
     else:
         # estratégia simples: analisar o PRIMEIRO token não trivial
@@ -117,7 +117,7 @@ if wic_sentence:
 
         morph_result = None
         morph_result = None
-    if "morph_analyze_simple" in globals() and callable(morph_analyze_simple):
+if "morph_analyze_simple" in globals() and callable(morph_analyze_simple):
     try:
         morph_result = morph_analyze_simple(target)
     except Exception:

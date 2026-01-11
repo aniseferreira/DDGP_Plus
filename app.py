@@ -12,7 +12,7 @@ from ddgp.translit import transliterate_to_greek
 from ddgp.formatting import format_pdesc
 
 # ============================================================
-# CONFIGURAÇÃO DA PÁGINA / LOGO / CSS  (LEGADO — PRESERVADO)
+# CONFIGURAÇÃO DA PÁGINA / LOGO / CSS
 # ============================================================
 
 LOGO_URL = "https://raw.githubusercontent.com/aniseferreira/DDGP_Plus/main/ddgp/logo.png"
@@ -20,4 +20,6 @@ LOGO_LOCAL = None
 
 st.set_page_config(
     page_title="DDGP Plus — Morph & Dictionary",
-    page_icon=LOGO_
+    page_icon=LOGO_URL,
+    layout="wide"
+)

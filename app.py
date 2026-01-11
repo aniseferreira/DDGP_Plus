@@ -155,7 +155,8 @@ wic_sentence = st.text_input(
 if wic_sentence:
     if not UD_AVAILABLE:
         st.error(
-            "Pipeline UD não está disponível neste ambiente. "
+            "A análise morfológica em contexto (UD) não está disponível neste ambiente de hospedagem." 
+            "Em servidores com mais memória, o recurso é ativado automaticamente."
             "O DDGP continua funcionando normalmente."
         )
     else:

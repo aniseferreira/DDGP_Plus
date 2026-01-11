@@ -12,6 +12,46 @@ from ddgp.translit import transliterate_to_greek
 from ddgp.formatting import format_pdesc
 
 # ============================================================
+# MORPH_RAW (UD) — PIPELINE
+# ============================================================
+
+UD_AVAILABLE = False
+ud_nlp = None
+
+try:
+    import stanza
+    ud_nlp = stanza.Pipeline(
+        lang="grc",
+        package="proiel",   # ou agdt, conforme o que você usou
+        processors="tokenize, pos,lemma,morph",
+        tokenize_no_ssplit=True,
+        use_gpu=False
+    )
+    UD_AVAILABLE = True
+except Exception as e:
+    UD_AVAILABLE = False
+
+def morph_ud_analyze(sentence: str):
+    if not UD_AVAILABLE or not ud_nlp:
+        return None
+
+    doc = ud_nlp(sentence)
+    results = []
+
+    for sent in doc.sentences:
+        for word in sent.words:
+            results.append({
+                "token": word.text,
+                "lema": word.lemma,
+                "upos": word.upos,
+                "feats": word.feats
+            })
+
+    return results
+
+
+
+# ============================================================
 # CONFIGURAÇÃO DA PÁGINA / LOGO / CSS  (LEGADO — PRESERVADO)
 # ============================================================
 
@@ -92,46 +132,44 @@ with col_title:
 st.markdown("---")
 
 # ============================================================
-# WIC — ANÁLISE MORFOLÓGICA EM CONTEXTO
+# WIC — ANÁLISE MORFOLÓGICA EM CONTEXTO (UD)
 # ============================================================
 
-st.markdown("### 🧩 Análise morfológica em contexto (WIC)")
+st.markdown("### 🧩 Análise morfológica em contexto (WIC — UD)")
+
 wic_sentence = st.text_input(
     "Cole uma frase curta contendo o vocábulo:",
-    placeholder="ex.: Ἰτέον δὴ λοιπὸν"
+    placeholder="ex.: τὸ προκείμενον ἵνα μὴ μεῖζον ἡμῖν"
 )
 
 if wic_sentence:
-    st.subheader("Resultado morfológico (WIC)")
-
-    # tokenização simples (separação por espaços)
-    tokens = [t for t in wic_sentence.split() if t.strip()]
-
-    if not tokens:
-        st.warning("Não foi possível identificar palavras na frase.")
+    if not UD_AVAILABLE:
+        st.error(
+            "Pipeline UD não está disponível neste ambiente. "
+            "O DDGP continua funcionando normalmente."
+        )
     else:
-        # estratégia simples: analisar o PRIMEIRO token
-        target = tokens[0]
+        ud_result = morph_ud_analyze(wic_sentence)
 
-        st.caption(f"Forma analisada (WIC): **{target}**")
-
-        morph_result = None
-        if "morph_analyze_simple" in globals() and callable(morph_analyze_simple):
-            try:
-                morph_result = morph_analyze_simple(target)
-            except Exception:
-                morph_result = None
-
-        if morph_result:
-            st.json(morph_result)
-
-            # se houver lema, oferecer consulta direta ao DDGP
-            lema = morph_result.get("lema")
-            if lema:
-                if st.button(f"🔎 Consultar lema no DDGP: {lema}"):
-                    st.session_state["campo_ascii"] = lema
+        if not ud_result:
+            st.warning("Não foi possível analisar a frase com o pipeline UD.")
         else:
-            st.warning("Análise morfológica indisponível para esta forma.")
+            st.subheader("Resultado morfológico (UD)")
+
+            for i, tok in enumerate(ud_result):
+                cols = st.columns([2, 2, 2, 3, 2])
+
+                cols[0].markdown(f"**{tok['token']}**")
+                cols[1].markdown(tok["lema"] or "—")
+                cols[2].markdown(tok["upos"] or "—")
+                cols[3].markdown(tok["feats"] or "—")
+
+                if tok["lema"]:
+                    if cols[4].button(
+                        "🔎 DDGP",
+                        key=f"ddgp_ud_{i}"
+                    ):
+                        st.session_state["campo_ascii"] = tok["lema"]
 
 st.markdown("---")
 

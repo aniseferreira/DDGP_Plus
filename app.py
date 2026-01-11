@@ -113,19 +113,28 @@ st.markdown("---")
 # INPUT INTELIGENTE DDGP  (LEGADO — PRESERVADO)
 # ============================================================
 
-if "campo_ascii" not in st.session_state:
-    st.session_state["campo_ascii"] = ""
-if "campo_grc" not in st.session_state:
-    st.session_state["campo_grc"] = ""
+palavra = (
+    st.session_state.get("campo_grc")
+    or st.session_state.get("campo_ascii")
+    or ""
+).strip()
+
 
 def _on_change_convert():
     txt = st.session_state.get("campo_ascii", "")
-    if txt and all(ord(ch) < 128 for ch in txt):
+    if not txt:
+        st.session_state["campo_grc"] = ""
+        return
+
+    # ASCII → grego
+    if all(ord(ch) < 128 for ch in txt):
         gr = transliterate_to_greek(txt.lower())
         st.session_state["campo_ascii"] = gr
         st.session_state["campo_grc"] = gr
     else:
+        # já é grego
         st.session_state["campo_grc"] = txt
+
 
 st.markdown(
     '<div id="ddgp-instrucao">'

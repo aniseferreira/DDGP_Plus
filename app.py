@@ -12,6 +12,16 @@ from ddgp.translit import transliterate_to_greek
 from ddgp.formatting import format_pdesc
 
 # ============================================================
+# DOWNLOAD DO MODELO UD (uma vez por ambiente)
+# ============================================================
+
+try:
+    import stanza
+    stanza.download("grc", processors="tokenize,pos,lemma,morph", verbose=False)
+except Exception:
+    pass
+
+# ============================================================
 # MORPH_RAW (UD) — PIPELINE
 # ============================================================
 

@@ -204,6 +204,17 @@ if palavra:
         if not shown:
             st.warning("Nenhuma entrada do DDGP encontrada para esta forma.")
 
+        # --- Fallback FINAL: tratar a forma como lema direto ---
+        if not shown:
+            entry_ids = find_entry_ids_for_lemma_candidate(simp_form)
+            for eid in entry_ids:
+                ent = DDGP_ENTRY.get(str(eid))
+                if ent:
+                    shown = True
+                    st.markdown(f"**{ent.get('gword','')}** (id: {eid})")
+                    st.markdown(format_pdesc(ent.get("pdesc","")), unsafe_allow_html=True)
+
+
 # ============================================================
 # FOOTER  (LEGADO)
 # ============================================================

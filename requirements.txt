@@ -1,3 +1,4 @@
+stanza
 streamlit>=1.38
 cltk>=1.2.0
 regex

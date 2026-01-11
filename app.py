@@ -137,7 +137,7 @@ with col_left:
 
 with col_title:
     st.markdown("## DDGP Plus — Analisador Morfológico e Dicionário Digital de Grego–Português")
-    st.markdown("Versão 2025 — online")
+    st.markdown("Versão 2025-2026 — online")
 
 st.markdown("---")
 

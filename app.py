@@ -116,11 +116,13 @@ if wic_sentence:
         st.caption(f"Forma analisada (WIC): **{target}**")
 
         morph_result = None
-        if MORPH_AVAILABLE:
-            try:
-                morph_result = morph_analyze_simple(target)
-            except Exception as e:
-                morph_result = None
+        morph_result = None
+    if "morph_analyze_simple" in globals() and callable(morph_analyze_simple):
+    try:
+        morph_result = morph_analyze_simple(target)
+    except Exception:
+        morph_result = None
+
 
         if morph_result:
             st.json(morph_result)

@@ -92,37 +92,35 @@ with col_title:
 st.markdown("---")
 
 # ============================================================
-# --- NOVO (WIC) — ANÁLISE MORFOLÓGICA EM CONTEXTO
+# WIC — ANÁLISE MORFOLÓGICA EM CONTEXTO
 # ============================================================
 
 st.markdown("### 🧩 Análise morfológica em contexto (WIC)")
 wic_sentence = st.text_input(
     "Cole uma frase curta contendo o vocábulo:",
-    placeholder="ex.: λύει τὸν δεσμόν"
+    placeholder="ex.: Ἰτέον δὴ λοιπὸν"
 )
 
 if wic_sentence:
-    st.subheader("🧩 Análise morfológica em contexto")
+    st.subheader("Resultado morfológico (WIC)")
 
-    # tokenização simples (grego: separação por espaços)
+    # tokenização simples (separação por espaços)
     tokens = [t for t in wic_sentence.split() if t.strip()]
 
-if not tokens:
+    if not tokens:
         st.warning("Não foi possível identificar palavras na frase.")
     else:
-        # estratégia simples: analisar o PRIMEIRO token não trivial
+        # estratégia simples: analisar o PRIMEIRO token
         target = tokens[0]
 
         st.caption(f"Forma analisada (WIC): **{target}**")
 
         morph_result = None
-        morph_result = None
-if "morph_analyze_simple" in globals() and callable(morph_analyze_simple):
-    try:
-        morph_result = morph_analyze_simple(target)
-    except Exception:
-        morph_result = None
-
+        if "morph_analyze_simple" in globals() and callable(morph_analyze_simple):
+            try:
+                morph_result = morph_analyze_simple(target)
+            except Exception:
+                morph_result = None
 
         if morph_result:
             st.json(morph_result)
@@ -133,12 +131,10 @@ if "morph_analyze_simple" in globals() and callable(morph_analyze_simple):
                 if st.button(f"🔎 Consultar lema no DDGP: {lema}"):
                     st.session_state["campo_ascii"] = lema
         else:
-            st.warning(
-                "Análise morfológica indisponível para esta forma em contexto."
-            )
-
+            st.warning("Análise morfológica indisponível para esta forma.")
 
 st.markdown("---")
+
 
 # ============================================================
 # INPUT INTELIGENTE DDGP  (LEGADO — PRESERVADO)

@@ -120,22 +120,7 @@ palavra = (
 ).strip()
 
 
-def _on_change_convert():
-    txt = st.session_state.get("campo_ascii", "")
-    if not txt:
-        st.session_state["campo_grc"] = ""
-        return
-
-    # ASCII → grego
-    if all(ord(ch) < 128 for ch in txt):
-        gr = transliterate_to_greek(txt.lower())
-        st.session_state["campo_ascii"] = gr
-        st.session_state["campo_grc"] = gr
-    else:
-        # já é grego
-        st.session_state["campo_grc"] = txt
-
-
+# Instrução (MANTIDA)
 st.markdown(
     '<div id="ddgp-instrucao">'
     'Digite (pode usar letras latinas: legw, ferw, akouw — ou grego diretamente sem diacríticos):'
@@ -143,8 +128,22 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.text_input(" ", key="campo_ascii", on_change=_on_change_convert)
-palavra = st.session_state.get("campo_grc", "").strip()
+# Campo de input visível (SEM on_change)
+txt_raw = st.text_input(
+    " ",
+    key="campo_ascii"
+)
+
+# NORMALIZAÇÃO DIRETA (SEM EVENTO)
+if txt_raw:
+    # ASCII → grego
+    if all(ord(ch) < 128 for ch in txt_raw):
+        palavra = transliterate_to_greek(txt_raw.lower())
+    else:
+        palavra = txt_raw
+else:
+    palavra = ""
+
 
 # ============================================================
 # FUNÇÕES DE LOOKUP DDGP  (LEGADO)

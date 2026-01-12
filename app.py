@@ -309,7 +309,7 @@ footer_long = """
 - Base: Dicionário Digital de Grego–Português (DDGP e DGP), Projeto Letras Clássicas Digitais — FCLAr/UNESP.  
 - Responsável: Anise D'Orange Ferreira.
 - Licença do conteúdo digital: CC BY–NC–ND 4.0.  
-- Créditos aos autores da versião impressa do DGP, coordenadores e instituições conforme rodapé em http://hipatia.fclar.unesp.br.  
+- Créditos aos autores da versão impressa do DGP, coordenadores e instituições conforme rodapé em http://hipatia.fclar.unesp.br.  
 - Desenvolvimento do front-end e integração: equipe de desenvolvimento (registro técnico disponível sob solicitação).
 """
 st.markdown(footer_short)

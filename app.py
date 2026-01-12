@@ -295,9 +295,24 @@ if palavra:
 # FOOTER  (LEGADO)
 # ============================================================
 
+# --- FOOTER ---
 st.markdown("---")
-st.markdown(
-    "**DDGP Plus** — Dicionário Digital de Grego–Português. "
-    "Projeto Letras Clássicas Digitais — FCLAr/UNESP. "
-    "Licença CC BY–NC–ND 4.0."
-)
+footer_short = """
+**DDGP Plus** — Analisador Morfológico e Dicionário Digital de Grego–Português.  
+Versão 2025. Disponível em: https://ddgp-plus-morpho.streamlit.app/  
+Baseado no Dicionário Digital de Grego–Português (DDGP e DGP), pelo Projeto Letras Clássicas Digitais FCLAr/UNESP .
+Licenciado sob **CC BY–NC–ND 4.0**.
+"""
+footer_long = """
+**Créditos e licença (detalhado)**
+
+- Base: Dicionário Digital de Grego–Português (DDGP e DGP), Projeto Letras Clássicas Digitais — FCLAr/UNESP.  
+- Responsável: Anise D'Orange Ferreira.
+- Licença do conteúdo digital: CC BY–NC–ND 4.0.  
+- Créditos aos autores da versião impressa do DGP, coordenadores e instituições conforme rodapé em http://hipatia.fclar.unesp.br.  
+- Desenvolvimento do front-end e integração: equipe de desenvolvimento (registro técnico disponível sob solicitação).
+"""
+st.markdown(footer_short)
+with st.expander("Créditos e licença (detalhado)"):
+    st.markdown(footer_long)
+st.markdown("<div style='text-align:right; font-size:0.85em; color:gray;'>© Projeto DDGP — UNESP (digital). CC BY–NC–ND 4.0</div>", unsafe_allow_html=True)
